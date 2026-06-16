@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View professional profile, services, portfolio, and contact information on ServiceLine DZ.">
+  <title>Professional Profile | ServiceLine DZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Portfolio Gallery Styles */
+    .portfolio-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .portfolio-gallery-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .portfolio-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .portfolio-gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .portfolio-gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      transition: background 0.3s ease;
+    }
+
+    .portfolio-gallery-item:hover::after {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .lightbox-content img {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: var(--radius-lg);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .lightbox-nav:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .lightbox-prev {
+      left: -60px;
+    }
+
+    .lightbox-next {
+      right: -60px;
+    }
+
+    /* Emergency Badge */
+    .emergency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius);
+      color: #dc2626;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    .emergency-badge svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Categories Display */
+    .categories-display {
+      margin-top: 0.75rem;
+    }
+
+    .main-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .additional-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .additional-category-tag {
+      padding: 0.375rem 0.75rem;
+      background: var(--background-alt);
+      color: var(--text-secondary);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    /* Social Links */
+    .social-contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .social-contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--background-alt);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .social-contact-link:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .social-contact-link svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .social-contact-link.whatsapp {
+      background: #25D366;
+      color: white;
+    }
+
+    .social-contact-link.whatsapp:hover {
+      background: #128C7E;
+    }
+
+    /* Enhanced Services Display */
+    .service-item-enhanced {
+      background: var(--background-alt);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .service-item-enhanced:last-child {
+      margin-bottom: 0;
+    }
+
+    .service-item-enhanced .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .service-item-enhanced h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .service-item-enhanced .service-price {
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .service-item-enhanced .service-description {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .lightbox-nav {
+        display: none;
+      }
+
+      .portfolio-gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .portfolio-gallery {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.portfolio-item {
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1;
+}
+
+.portfolio-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.3s;
+}
+
+.portfolio-item:hover img {
+  transform: scale(1.05);
+}
+
+.availability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.availability-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--background-alt);
+}
+
+.availability-day {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.availability-hours {
+  color: var(--text-secondary);
+}
+
+.qualification-file {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: var(--background-alt);
+  border-radius: 10px;
+}
+
+.qualification-file a {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.professional-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.professional-tag {
+  padding: 0.5rem 1rem;
+  background: var(--background-alt);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.member-since {
+
+  color: #64748b;
+
+  font-size: 0.95rem;
+
+  margin-bottom: 0.75rem;
+}
+
+.profile-verified {
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background: #10b981;
+  color: white;
+
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.profile-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-top-actions {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.save-btn {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn.saved {
+
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+
+}
+
+.contact-btn,
+.save-btn {
+
+  padding: 0.9rem 1.5rem;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 12px;
+
+  background: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+}
+
+.contact-btn {
+
+  background: #2563eb;
+  color: white;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 0.9rem 1.5rem;
+
+  font-weight: 600;
+  cursor: pointer;
+
+}
+
+.contact-btn:hover {
+
+  background: #1d4ed8;
+
+}
+
+.contact-btn,
+.save-btn {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+
+}
+
+.social-contact-link svg {
+
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+}
+
+.account-settings {
+  position: relative;
+}
+
+.settings-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 180px;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.1);
+
+  overflow: hidden;
+
+  z-index: 100;
+}
+
+.settings-menu button {
+  border: none;
+  background: white;
+
+  padding: 12px 16px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.settings-menu button:hover {
+  background: #f3f4f6;
+}
+
+.settings-icon-btn {
+
+  width: 52px;
+  height: 52px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.settings-icon-btn:hover {
+
+  background: #f9fafb;
+  border-color: #2563eb;
+
+}
+
+.settings-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  color: #374151;
+}
+
+.settings-menu-title {
+
+  padding: 12px 16px;
+
+  font-weight: 600;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  background: #f9fafb;
+
+}
+
+.settings-menu {
+
+  min-width: 220px;
+
+}
+
+.settings-menu {
+  top: calc(100% + 6px);
+}
+
+.settings-menu button {
+
+  font-size: 15px;
+
+}
+
+.settings-menu button {
+
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+
+  width: 100%;
+
+  border: flex;
+  background: white;
+
+  padding: 14px 16px;
+
+  cursor: pointer;
+
+}
+
+#deleteAccountBtn {
+  color: #dc2626;
+}
+
+#deleteAccountBtn:hover {
+  background: #fef2f2;
+}
+
+.account-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#2563eb;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+}
+
+.reviews-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:2rem;
+}
+
+.reviews-summary{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.reviews-score{
+  font-size:3rem;
+  font-weight:700;
+  color:var(--text-primary);
+}
+
+.reviews-stars{
+  display:flex;
+  flex-direction:column;
+}
+
+.stars{
+  color:#fbbf24;
+  font-size:1.2rem;
+}
+
+.reviews-count{
+  color:var(--text-secondary);
+}
+
+.review-card{
+  padding:1.5rem 0;
+  border-bottom:1px solid var(--border-color);
+}
+
+.review-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:1rem;
+}
+
+.review-author{
+  display:flex;
+  gap:1rem;
+  align-items:center;
+}
+
+.review-author img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.review-author h4{
+  margin:0;
+}
+
+.review-author p{
+  margin:0;
+  color:var(--text-secondary);
+  font-size:0.9rem;
+}
+
+.review-text{
+  line-height:1.8;
+}
+
+.review-form{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  margin-bottom:2rem;
+}
+
+.review-form textarea,
+.review-form select{
+  width:100%;
+  padding:0.75rem;
+  border:1px solid var(--border-color);
+  border-radius:8px;
+}
+
+#reviewComment {
+
+  width: 100%;
+
+  padding: 1rem;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 10px;
+
+  resize: vertical;
+
+  min-height: 120px;
+
+  outline: none;
+
+  font-family: inherit;
+
+}
+
+#reviewComment:focus {
+
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+
+}
+
+.review-avatar {
+
+  width: 50px;
+  height: 50px;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 1.1rem;
+
+}
+
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="logo">
+          <img src="image/slLogo.png" alt="ServiceLine Logo" class="logo-img">
+          ServiceLine<span>DZ</span>
+        </a>
+      
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="search.html">Find Pros</a>
+        <a href="../index.html#categories">Categories</a>
+        <a href="../index.html#how-it-works">How It Works</a>
+      </div>
+      
+      <div class="nav-buttons">
+
+  <div id="accountSettings" class="account-settings">
+
+    <button id="settingsBtn" class="settings-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21a8 8 0 0 0-16 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
+    </button>
+
+    <div id="settingsMenu" class="settings-menu" style="display:none;">
+
+      <div class="settings-menu-title">
+        My Account
+      </div>
+
+      <button onclick="location.href='edit_profile.html'">
+        <span>Edit Profile</span>
+        <span>✏️</span>
+      </button>
+
+      <button id="logoutBtn">
+        <span>Logout</span>
+        <span>🚪</span>
+      </button>
+
+      <button id="deleteProfileBtn">
+        <span>Delete Profile</span>
+        <span>🗑️</span>
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+      
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav">
+    <a href="../index.html">Home</a>
+    <a href="search.html">Find Professionals</a>
+    <a href="../index.html#categories">Categories</a>
+    <a href="../index.html#how-it-works">How It Works</a>
+    <a href="../index.html#contact">Contact</a>
+    <a href="login.html" class="btn btn-secondary">Sign In</a>
+    <a href="register.html" class="btn btn-primary">Get Started</a>
+  </div>
+
+  <main class="profile-page">
+    <!-- Cover Photo -->
+    <div class="profile-cover">
+      <img id="coverPhoto" src="" alt="">
+    </div>
+
+  <!-- Profile Header -->
+<section class="profile-header">
+
+  <div class="container">
+
+    <div class="profile-avatar-container">
+
+      <img
+        id="profilePhoto"
+        src=""
+        alt=""
+        class="profile-avatar">
+
+      <div
+        id="verifiedBadge"
+        class="profile-verified"
+        style="display: none;">
+
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <polyline points="20 6 9 17 4 12"></polyline>
+
+        </svg>
+
+        <span>Verified</span>
+
+      </div>
+
+    </div>
+
+    <div class="profile-info">
+
+  <div class="profile-details">
+
+    <h1 id="fullName"></h1>
+
+
+    <div class="profile-meta">
+
+      <div class="profile-meta-item">
+
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+
+        <span id="location"></span>
+
+      </div>
+
+      <div class="profile-meta-item">
+
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+
+        <span id="memberSince"></span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="profile-top-actions">
+
+    <button id="contactBtn" class="contact-btn">
+    
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2">
+    
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    
+      </svg>
+    
+      Contact
+    
+    </button>
+
+    <button id="saveProfileBtn" class="save-btn">
+    
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2">
+    
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+    
+      </svg>
+    
+      Save
+    
+    </button>
+
+  </div>
+
+</div>
+
+  </div>
+
+</section>
+
+<!-- Profile Content -->
+<section class="profile-content">
+  <div class="container">
+    <div class="profile-layout">
+
+      <!-- Main Content -->
+      <div class="profile-main">
+
+        <!-- About Section -->
+        <div class="profile-section">
+          <h3>About</h3>
+          <p id="aboutMe"></p>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="profile-section">
+
+          <h3>Service Categories</h3>
+
+          <div class="categories-display">
+
+            <span
+              id="mainCategory"
+              class="main-category-badge">
+            </span>
+
+            <div
+              id="additionalCategories"
+              class="additional-categories">
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Services Section -->
+        <div class="profile-section">
+
+          <h3>Services Offered</h3>
+
+          <div
+            id="servicesContainer"
+            class="services-list-enhanced">
+          </div>
+
+        </div>
+
+        <!-- Portfolio Section -->
+        <div class="profile-section">
+
+          <h3>Portfolio / Previous Work</h3>
+
+          <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+            Click on any image to view larger
+          </p>
+
+          <div
+            id="portfolioGallery"
+            class="portfolio-gallery">
+          </div>
+
+        </div>
+
+        <!-- Experience Section -->
+<div class="profile-section">
+
+  <h3>Experience & Qualifications</h3>
+
+  <p>
+    <strong>Experience:</strong>
+    <span id="experienceText"></span>
+  </p>
+
+  <div
+    id="qualificationsText"
+    style="margin-top: 1rem;">
+  </div>
+
+  <div
+    id="qualificationFilesContainer"
+    style="margin-top: 1rem;">
+  </div>
+
+</div>
+
+<!-- Reviews Section -->
+
+<div class="profile-section">
+
+  <div class="reviews-header">
+
+    <div class="reviews-summary">
+
+      <div
+        id="averageRating"
+        class="reviews-score">
+        0.0
+      </div>
+
+      <div class="reviews-stars">
+
+        <span
+          id="averageStars"
+          class="stars">
+          ☆☆☆☆☆
+        </span>
+
+        <span
+          id="reviewsCount"
+          class="reviews-count">
+          Based on 0 reviews
+        </span>
+
+      </div>
+
+    </div>
+
+    <button
+      id="writeReviewBtn"
+      class="btn btn-outline btn-sm">
+      Write a Review
+    </button>
+
+  </div>
+
+  <!-- Review Form -->
+
+  <div
+    id="reviewForm"
+    style="display:none; margin-top:1.5rem;">
+
+    <div class="review-form">
+
+      <label>Your Rating</label>
+
+      <select
+        id="reviewRating"
+        class="form-control">
+
+        <option value="5">★★★★★ (5)</option>
+        <option value="4">★★★★☆ (4)</option>
+        <option value="3">★★★☆☆ (3)</option>
+        <option value="2">★★☆☆☆ (2)</option>
+        <option value="1">★☆☆☆☆ (1)</option>
+
+      </select>
+
+      <textarea id="reviewComment" class="form-control" rows="4" placeholder="Write your review..."></textarea>
+
+      <button
+        id="submitReviewBtn"
+        class="btn btn-primary">
+
+        Submit Review
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Reviews List -->
+
+  <div id="reviewsContainer">
+
+  </div>
+
+  <button
+    id="loadMoreReviews"
+    class="btn btn-secondary w-full mt-3"
+    style="justify-content:center; display:none;">
+
+    Load More Reviews
+
+  </button>
+
+</div>
+
+      </div>
+
+
+            <!-- Reviews Section -->
+             
+          
+
+          <!-- Sidebar -->
+          <aside class="profile-sidebar">
+          
+          <!-- Contact Information -->
+          <div class="profile-section">
+          
+            <h3>Contact Information</h3>
+          
+            <div class="contact-info">
+          
+              <div class="contact-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span id="phoneNumber"></span>
+              </div>
+
+            <div class="contact-item">
+
+  <svg width="20" height="20" viewBox="0 0 24 24"
+       fill="none"
+       stroke="currentColor"
+       stroke-width="2">
+
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+    <circle cx="12" cy="10" r="3"></circle>
+
+  </svg>
+
+  <span id="addressInfo"></span>
+
+</div>
+          
+            
+          
+              <!-- Social Contact Links -->
+              <div class="social-contact-links">
+          
+                <a
+                  id="whatsappLink"
+                  href="#"
+                  target="_blank"
+                  class="social-contact-link whatsapp">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  WhatsApp
+                </a>
+
+          
+                <a
+                  id="instagramLink"
+                  href="#"
+                  target="_blank"
+                  class="social-contact-link">
+                
+                  <svg viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2">
+                
+                    <rect x="2" y="2"
+                          width="20"
+                          height="20"
+                          rx="5"
+                          ry="5"></rect>
+                
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                
+                    <line x1="17.5"
+                          y1="6.5"
+                          x2="17.51"
+                          y2="6.5"></line>
+                
+                  </svg>
+                
+                  <span>Instagram</span>
+                
+                </a>
+          
+                <a
+                  id="facebookLink"
+                  href="#"
+                  target="_blank"
+                  class="social-contact-link">
+                
+                  <svg viewBox="0 0 24 24"
+                       fill="currentColor">
+                
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                
+                  </svg>
+                
+                  <span>Facebook</span>
+                
+                </a>
+          
+                <a
+                  id="tiktokLink"
+                  href="#"
+                  target="_blank"
+                  class="social-contact-link">
+                
+                  <svg viewBox="0 0 24 24"
+                       fill="currentColor">
+                
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"></path>
+                
+                  </svg>
+                
+                  <span>TikTok</span>
+                
+                </a>
+          
+              </div>
+          
+            </div>
+
+          </div>
+          
+            <div class="profile-section">
+            
+              <h3>Availability</h3>
+            
+              <div
+                id="availabilityList"
+                class="availability-list">
+              </div>
+            
+              <div
+                id="emergencyBadge"
+                class="emergency-badge"
+                style="display:none;">
+            
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            
+                24/7 Emergency Services Available
+            
+              </div>
+            
+              </div>
+
+              <div class="profile-section">
+              
+                <h3>Service Areas</h3>
+              
+                <div
+                  id="serviceAreasContainer"
+                  class="professional-tags"
+                  style="margin-top:0.5rem;">
+                </div>
+              
+              </div>
+            </aside>
+
+            
+            </div>
+            </div>
+            </section>
+            </main>
+            
+            <!-- Lightbox for Portfolio -->
+            <div class="lightbox" id="lightbox">
+              <div class="lightbox-content">
+            
+                <button
+                  class="lightbox-close"
+                  onclick="closeLightbox()">
+            
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+            
+                </button>
+            
+                <button
+                  class="lightbox-nav lightbox-prev"
+                  onclick="navigateLightbox(-1)">
+            
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+            
+                </button>
+            
+                <img
+                  id="lightbox-image"
+                  src=""
+                  alt="Portfolio image">
+            
+                <button
+                  class="lightbox-nav lightbox-next"
+                  onclick="navigateLightbox(1)">
+            
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+            
+                </button>
+            
+              </div>
+            </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="../index.html" class="logo">
+            <img src="image/slLogo.png" alt="ServiceLine Logo" class="logo-img">
+            ServiceLine<span>DZ</span>
+          </a>
+          <p>Connecting trusted professionals with clients across Algeria. Your trusted marketplace for quality services.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">f</a>
+            <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+            <a href="#" class="social-link" aria-label="Instagram">📷</a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>For Clients</h4>
+          <ul>
+            <li><a href="search.html">Find Professionals</a></li>
+            <li><a href="../index.html#categories">Browse Categories</a></li>
+            <li><a href="../index.html#how-it-works">How It Works</a></li>
+            <li><a href="../index.html#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>For Professionals</h4>
+          <ul>
+            <li><a href="register.html">Become a Provider</a></li>
+            <li><a href="../index.html#become-provider">Provider Benefits</a></li>
+            <li><a href="../index.html#faq">Verification Process</a></li>
+            <li><a href="search.html">Services Categories</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="../index.html#categories">Popular Categories</a></li>
+            <li><a href="../index.html#statistics">Platform Statistics</a></li>
+            <li><a href="../index.html#mobile-app">Mobile App</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 ServiceLine DZ. All rights reserved.</p>
+        <div class="footer-bottom-links">
+  
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js">
+  </script>
+  <script>
+  
+  let portfolioImages = [];
+  
+  let currentImageIndex = 0;
+  
+  function openLightbox(index) {
+  
+    currentImageIndex = index;
+  
+    const lightbox =
+      document.getElementById(
+        "lightbox"
+      );
+  
+    const lightboxImage =
+      document.getElementById(
+        "lightbox-image"
+      );
+  
+    lightboxImage.src =
+      portfolioImages[index];
+  
+    lightbox.classList.add(
+      "active"
+    );
+  
+    document.body.style.overflow =
+      "hidden";
+  }
+  
+  function closeLightbox() {
+  
+    const lightbox =
+      document.getElementById(
+        "lightbox"
+      );
+  
+    lightbox.classList.remove(
+      "active"
+    );
+  
+    document.body.style.overflow =
+      "";
+  }
+  
+  function navigateLightbox(direction) {
+  
+    currentImageIndex += direction;
+  
+    if (
+      currentImageIndex < 0
+    ) {
+  
+      currentImageIndex =
+        portfolioImages.length - 1;
+    }
+  
+    if (
+      currentImageIndex >=
+      portfolioImages.length
+    ) {
+  
+      currentImageIndex = 0;
+    }
+  
+    document.getElementById(
+      "lightbox-image"
+    ).src =
+      portfolioImages[
+        currentImageIndex
+      ];
+  }
+  
+  document.addEventListener(
+    "keydown",
+    function (e) {
+  
+      if (
+        e.key === "Escape"
+      ) {
+        closeLightbox();
+      }
+  
+      if (
+        e.key === "ArrowLeft"
+      ) {
+        navigateLightbox(-1);
+      }
+  
+      if (
+        e.key === "ArrowRight"
+      ) {
+        navigateLightbox(1);
+      }
+    }
+  );
+  
+  document
+    .getElementById(
+      "lightbox"
+    )
+    .addEventListener(
+      "click",
+      function (e) {
+  
+        if (
+          e.target === this
+        ) {
+  
+          closeLightbox();
+        }
+      }
+    );
+
+    /* =========================
+   Load Profile
+========================= */
+
+const urlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const profileId =
+  urlParams.get("id");
+
+
+
+if (profileId) {
+
+  fetch(
+    `api/get_profile.php?id=${profileId}`
+  )
+  .then(response =>
+    response.json()
+  )
+  .then(data => {
+
+    if (!data.success) {
+      return;
+    }
+
+    const profile =
+      data.profile;
+
+    console.log(profile);
+    console.log(profile.statut);
+
+    document.getElementById(
+      "fullName"
+    ).textContent =
+      profile.nomComplet || "";
+
+    document.getElementById(
+      "location"
+    ).textContent =
+      `${profile.nomVille}, ${profile.nomWilaya}`;
+
+    document.getElementById(
+      "aboutMe"
+    ).textContent =
+      profile.description || "";
+
+    
+    if (
+      profile.photoProfil
+    ) {
+
+      document.getElementById(
+        "profilePhoto"
+      ).src =
+        profile.photoProfil;
+    }
+
+    if (
+      profile.photoCouverture
+    ) {
+
+      document.getElementById(
+        "coverPhoto"
+      ).src =
+        profile.photoCouverture;
+    }
+    
+
+    if (profile.dateCreation) {
+
+  const createdDate =
+    new Date(profile.dateCreation);
+
+  const options = {
+    year: "numeric",
+    month: "long"
+  };
+
+  document.getElementById(
+    "memberSince"
+  ).textContent =
+    "Member since " +
+    createdDate.toLocaleDateString(
+      "en-US",
+      options
+    );
+}
+
+/* Verified */
+
+const verifiedBadge =
+  document.getElementById(
+    "verifiedBadge"
+  );
+
+verifiedBadge.style.display =
+  "none";
+
+if (
+  profile.statut === "APPROUVE"
+) {
+
+  verifiedBadge.style.display =
+    "flex";
+}
+
+
+
+const userId =
+  localStorage.getItem("userId");
+
+const saveProfileBtn =
+  document.getElementById(
+    "saveProfileBtn"
+  );
+
+const accountSettings =
+  document.getElementById(
+    "accountSettings"
+  );
+
+const settingsBtn =
+  document.getElementById(
+    "settingsBtn"
+  );
+
+const settingsMenu =
+  document.getElementById(
+    "settingsMenu"
+  );
+
+settingsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (settingsMenu.style.display === "block") {
+        settingsMenu.style.display = "none";
+    } else {
+        settingsMenu.style.display = "block";
+    }
+});
+
+document.addEventListener("click", () => {
+    settingsMenu.style.display = "none";
+});
+
+function updateSaveButton(isSaved) {
+
+  if (isSaved) {
+
+    saveProfileBtn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2">
+
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+
+      </svg>
+
+      Saved
+    `;
+
+    saveProfileBtn.classList.add(
+      "saved"
+    );
+
+  } else {
+
+    saveProfileBtn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2">
+
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+
+      </svg>
+
+      Save
+    `;
+
+    saveProfileBtn.classList.remove(
+      "saved"
+    );
+
+  }
+
+}
+
+/* Check saved state */
+
+if (userId) {
+
+  fetch(
+    `api/check_saved.php?userId=${userId}&profileId=${profileId}`
+  )
+  .then(res => res.json())
+  .then(data => {
+
+    updateSaveButton(
+      data.saved
+    );
+
+  });
+
+}
+
+/* Save / Unsave */
+
+saveProfileBtn.addEventListener(
+  "click",
+  () => {
+
+    if (!userId) {
+
+      alert(
+        "Please sign in first"
+      );
+
+      return;
+    }
+
+    fetch(
+      "api/save_profile.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          userId,
+          profileId
+        })
+      }
+    )
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.error) {
+
+        alert(data.error);
+
+        return;
+      }
+
+      updateSaveButton(
+        data.saved
+      );
+
+    });
+
+  }
+);
+
+const editProfileBtn = document.getElementById("editProfileBtn");
+if (editProfileBtn) {
+  editProfileBtn.addEventListener("click", () => {
+    window.location.href = `edit_profile.html?id=${profile.profileId}`;
+  });
+}
+
+
+
+  /* Contact Information */
+
+document.getElementById(
+  "phoneNumber"
+).textContent =
+  profile.telephone || "Not provided";
+
+const contactBtn =
+  document.getElementById(
+    "contactBtn"
+  );
+
+if (profile.telephone) {
+
+  contactBtn.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+      `tel:${profile.telephone}`;
+
+    }
+  );
+
+}
+
+/* Address */
+document.getElementById(
+  "addressInfo"
+).textContent =
+
+profile.adresse
+  ? `${profile.adresse}, ${profile.nomVille}, ${profile.nomWilaya}`
+  : `${profile.nomVille}, ${profile.nomWilaya}`;
+
+
+/* WhatsApp */
+
+if (profile.whatsapp) {
+
+  const phone =
+    profile.whatsapp.startsWith("0")
+      ? "213" + profile.whatsapp.substring(1)
+      : profile.whatsapp;
+
+  document.getElementById(
+    "whatsappLink"
+  ).href =
+    `https://wa.me/${phone}`;
+
+    
+
+} else {
+
+  document.getElementById(
+    "whatsappLink"
+  ).style.display =
+    "none";
+
+}
+
+/* Instagram */
+
+if (profile.instagram) {
+
+  const instagramLink =
+    document.getElementById(
+      "instagramLink"
+    );
+
+  let instagramUrl =
+    profile.instagram;
+
+  if (
+    !instagramUrl.startsWith("http")
+  ) {
+
+    instagramUrl =
+      "https://" +
+      instagramUrl;
+  }
+
+  instagramLink.href =
+    instagramUrl;
+
+} else {
+
+  document.getElementById(
+    "instagramLink"
+  ).style.display =
+    "none";
+}
+
+/* Facebook */
+
+if (profile.facebook) {
+
+  const facebookLink =
+    document.getElementById(
+      "facebookLink"
+    );
+
+  let facebookUrl =
+    profile.facebook;
+
+  if (
+    !facebookUrl.startsWith("http")
+  ) {
+
+    facebookUrl =
+      "https://" +
+      facebookUrl;
+  }
+
+  facebookLink.href =
+    facebookUrl;
+
+} else {
+
+  document.getElementById(
+    "facebookLink"
+  ).style.display =
+    "none";
+}
+
+/* TikTok */
+
+if (profile.tiktok) {
+
+  const tiktokLink =
+    document.getElementById(
+      "tiktokLink"
+    );
+
+  let tiktokUrl =
+    profile.tiktok;
+
+  if (
+    !tiktokUrl.startsWith("http")
+  ) {
+
+    tiktokUrl =
+      "https://" +
+      tiktokUrl;
+  }
+
+  tiktokLink.href =
+    tiktokUrl;
+
+} else {
+
+  document.getElementById(
+    "tiktokLink"
+  ).style.display =
+    "none";
+}
+
+    /* Main Category */
+    
+    document.getElementById(
+        "mainCategory"
+    ).textContent =
+        data.mainCategory
+            ? data.mainCategory.nomCategorie
+            : "";
+    
+    /* Additional Categories */
+    document.getElementById(
+        "additionalCategories"
+    ).innerHTML =
+    
+        data.additionalCategories
+            .map(category => `
+    
+                <span
+                  class="additional-category-tag">
+    
+                  ${category.nomCategorie}
+    
+                </span>
+    
+            `)
+            .join("");
+
+    
+
+    /* Services */
+
+const servicesContainer =
+  document.getElementById(
+    "servicesContainer"
+  );
+
+servicesContainer.innerHTML = "";
+
+data.services.forEach(service => {
+
+  servicesContainer.innerHTML += `
+
+    <div class="service-item-enhanced">
+
+      <div class="service-header">
+
+        <h4>
+          ${service.titre}
+        </h4>
+
+        <span class="service-price">
+          ${service.prix} DA
+        </span>
+
+      </div>
+
+      <p class="service-description">
+        ${service.description}
+      </p>
+
+    </div>
+
+  `;
+});
+
+if (data.services.length === 0) {
+
+  servicesContainer.innerHTML =
+    "<p>No services added yet.</p>";
+
+}
+
+    /* Portfolio Photos */
+
+const portfolioGallery =
+  document.getElementById(
+    "portfolioGallery"
+  );
+
+portfolioGallery.innerHTML = "";
+
+const portfolioImages = JSON.parse(
+  profile.portfolio || "[]"
+);
+
+portfolioImages.forEach(
+  (photo, index) => {
+
+    portfolioGallery.innerHTML += `
+
+      <div
+        class="portfolio-item"
+        onclick="openLightbox(${index})">
+
+        <img
+          src="${photo}"
+          alt="Portfolio Work">
+
+      </div>
+
+    `;
+  }
+);
+
+if (portfolioImages.length === 0) {
+
+  portfolioGallery.innerHTML =
+    "<p>No portfolio images yet.</p>";
+
+}
+
+/* Availability */
+
+const availabilityList =
+  document.getElementById(
+    "availabilityList"
+  );
+
+availabilityList.innerHTML = "";
+
+const allDays = [
+
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday"
+
+];
+
+allDays.forEach(day => {
+
+  const dayData =
+    data.availability.find(
+      item =>
+        item.jourSemaine.toLowerCase() === day
+    );
+
+  let hoursText = "Closed";
+
+  if (dayData) {
+
+    const start =
+      dayData.heureDebut.slice(0, 5);
+
+    const end =
+      dayData.heureFin.slice(0, 5);
+
+    hoursText =
+      `${start} - ${end}`;
+  }
+
+  availabilityList.innerHTML += `
+
+    <div class="availability-item">
+
+      <span class="availability-day">
+
+        ${day.charAt(0).toUpperCase() + day.slice(1)}
+
+      </span>
+
+      <span class="availability-hours">
+
+        ${hoursText}
+
+      </span>
+
+    </div>
+
+  `;
+
+});
+
+/* Emergency Services */
+
+if (
+  profile.urgence == 1
+) {
+
+  document.getElementById(
+    "emergencyBadge"
+  ).style.display =
+    "flex";
+
+}
+
+/* Experience */
+
+const experienceMap = {
+
+  "0-1": "Less than 1 year",
+
+  "1-2": "1-2 years",
+
+  "3-5": "3-5 years",
+
+  "5-10": "5-10 years",
+
+  "10+": "10+ years"
+
+};
+
+document.getElementById(
+  "experienceText"
+).textContent =
+  experienceMap[
+    profile.anneesExperience
+  ] || "Not specified";
+
+
+/* Qualifications */
+
+const qualificationsText =
+  document.getElementById(
+    "qualificationsText"
+  );
+
+if (
+  profile.qualifications &&
+  profile.qualifications.trim() !== ""
+) {
+
+  qualificationsText.innerHTML = `
+
+    <h4 style="margin-bottom: 0.5rem;">
+      Qualifications
+    </h4>
+
+    <p>
+      ${profile.qualifications}
+    </p>
+
+  `;
+
+}
+
+/* Qualification Files */
+
+const qualificationFilesContainer =
+  document.getElementById(
+    "qualificationFilesContainer"
+  );
+
+qualificationFilesContainer.innerHTML = "";
+
+const qualificationFiles =
+  JSON.parse(
+    profile.diplomes || "[]"
+  );
+
+if (
+  qualificationFiles.length > 0
+) {
+
+  qualificationFilesContainer.innerHTML += `
+
+    <h4 style="margin-bottom: 1rem;">
+      Certificates & Documents
+    </h4>
+
+  `;
+
+  qualificationFiles.forEach(file => {
+
+    let fileName =
+      file.split("/").pop();
+    
+    fileName = fileName.replace(
+      /^[a-z0-9]+_qualification_/i,
+      ""
+    );
+
+    const icon =
+      file.toLowerCase().endsWith(".pdf")
+        ? "📄"
+        : "🖼️";
+
+    qualificationFilesContainer.innerHTML += `
+
+      <div
+        class="qualification-file">
+
+        <a
+          href="${file}"
+          target="_blank">
+
+          ${icon} ${fileName}
+
+        </a>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+/* Service Areas */
+
+const serviceAreasContainer =
+  document.getElementById(
+    "serviceAreasContainer"
+  );
+
+serviceAreasContainer.innerHTML = "";
+
+const serviceAreas =
+  JSON.parse(
+    profile.serviceAreas || "[]"
+  );
+
+serviceAreas.forEach(area => {
+
+  serviceAreasContainer.innerHTML += `
+
+    <span class="professional-tag">
+
+      ${area}
+
+    </span>
+
+  `;
+
+});
+
+
+/* Comments */
+
+/* =========================
+   Reviews
+========================= */
+
+fetch(
+  `api/get_reviews.php?profileId=${profileId}`
+)
+.then(response => response.json())
+.then(reviewData => {
+
+  document.getElementById(
+    "averageRating"
+  ).textContent =
+    reviewData.averageRating;
+
+  document.getElementById(
+    "reviewsCount"
+  ).textContent =
+    `Based on ${reviewData.reviewsCount} reviews`;
+
+  const reviewsContainer =
+    document.getElementById(
+      "reviewsContainer"
+    );
+
+  reviewsContainer.innerHTML = "";
+
+  reviewData.reviews.forEach(
+    review => {
+
+      const stars =
+        "★".repeat(review.note) +
+        "☆".repeat(5 - review.note);
+
+      reviewsContainer.innerHTML += `
+
+        <div class="review-card">
+
+          <div class="review-header">
+
+            <div class="review-author">
+
+              <div
+                class="review-avatar">
+
+                ${review.nomComplet.charAt(0).toUpperCase()}
+
+              </div>
+
+              <div>
+
+                <h4>
+                  ${review.nomComplet}
+                </h4>
+
+                <p>
+                  ${review.dateCreation}
+                </p>
+
+              </div>
+
+            </div>
+
+            <span class="stars">
+
+              ${stars}
+
+            </span>
+
+          </div>
+
+          <p class="review-text">
+
+            ${review.commentaire}
+
+          </p>
+
+        </div>
+
+      `;
+
+    });
+
+});
+
+document
+  .getElementById(
+    "submitReviewBtn"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      if (!userId) {
+
+        alert(
+          "Please sign in first"
+        );
+
+        return;
+      }
+
+      const rating =
+        document.getElementById(
+          "reviewRating"
+        ).value;
+
+      const comment =
+        document.getElementById(
+          "reviewComment"
+        ).value.trim();
+
+      if (!comment) {
+
+        alert(
+          "Please write a review"
+        );
+
+        return;
+      }
+
+      fetch(
+        "api/add_review.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            userId,
+            profileId,
+            rating,
+            comment
+          })
+        }
+      )
+      .then(res => res.json())
+      .then(data => {
+
+        if (data.error) {
+
+          alert(
+            data.error
+          );
+
+          return;
+        }
+
+        alert(
+          "Review submitted successfully"
+        );
+
+        location.reload();
+
+      });
+
+    }
+  );
+
+
+
+
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+}
+
+const settingsBtn =
+document.getElementById("settingsBtn");
+
+const settingsMenu =
+document.getElementById("settingsMenu");
+
+settingsBtn.addEventListener("click", (e) => {
+
+  e.stopPropagation();
+
+  settingsMenu.style.display =
+    settingsMenu.style.display === "block"
+      ? "none"
+      : "block";
+
+});
+
+document.addEventListener("click", () => {
+
+  settingsMenu.style.display = "none";
+
+});
+
+document.getElementById(
+  "writeReviewBtn"
+).addEventListener(
+  "click",
+  () => {
+
+    document.getElementById(
+      "reviewForm"
+    ).style.display = "block";
+
+  }
+);
+  
+  </script>
+</body>
+</html>

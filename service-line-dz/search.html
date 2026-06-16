@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search for professional service providers in Algeria - Find plumbers, electricians, developers, and more.">
+  <title>Find Professionals - ServiceLine DZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+.results-header{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:1rem;
+    margin-bottom:2rem;
+}
+
+.results-filter{
+    display:flex;
+    align-items:center;
+    gap:0.75rem;
+}
+
+.results-filter label{
+    font-weight:600;
+}
+
+.results-filter select{
+    min-width:220px;
+    padding:0.75rem 1rem;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    background:#fff;
+}
+
+.pagination{
+    align-self:center;
+}
+
+.account-settings {
+  position: relative;
+}
+
+.settings-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 180px;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.1);
+
+  overflow: hidden;
+
+  z-index: 100;
+}
+
+.settings-menu button {
+  border: none;
+  background: white;
+
+  padding: 12px 16px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.settings-menu button:hover {
+  background: #f3f4f6;
+}
+
+.settings-icon-btn {
+
+  width: 52px;
+  height: 52px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.settings-icon-btn:hover {
+
+  background: #f9fafb;
+  border-color: #2563eb;
+
+}
+
+.settings-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  color: #374151;
+}
+
+.settings-menu-title {
+
+  padding: 12px 16px;
+
+  font-weight: 600;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  background: #f9fafb;
+
+}
+
+.settings-menu {
+
+  min-width: 220px;
+
+}
+
+.settings-menu {
+  top: calc(100% + 6px);
+}
+
+.settings-menu button {
+
+  font-size: 15px;
+
+}
+
+.settings-menu button {
+
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+
+  width: 100%;
+
+  border: flex;
+  background: white;
+
+  padding: 14px 16px;
+
+  cursor: pointer;
+
+}
+
+#deleteAccountBtn {
+  color: #dc2626;
+}
+
+#deleteAccountBtn:hover {
+  background: #fef2f2;
+}
+
+.account-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#2563eb;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 420px;
+
+  background: white;
+  border-radius: 20px;
+
+  padding: 2rem;
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.12);
+
+  text-align: center;
+
+  animation: modalShow .25s ease;
+}
+
+.modal-icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 1rem;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(59,130,246,.1);
+  color: var(--primary-color);
+}
+
+.modal-title {
+  margin-bottom: .5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-actions button {
+  flex: 1;
+}
+
+@keyframes modalShow {
+
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.modal-warning{
+  margin-top: 10px;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.btn-danger{
+  background: #ef4444;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover{
+  background: #dc2626;
+}
+
+.modal-icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #2563eb;
+}
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="logo">
+        <img src="image/slLogo.png" alt="ServiceLine Logo" class="logo-img">
+        ServiceLine<span>DZ</span>
+      </a>
+      
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="search.html" class="active">Find Pros</a>
+        <a href="../index.html#categories">Categories</a>
+        <a href="../index.html#how-it-works">How It Works</a>
+      </div>
+      
+      <div id="guestButtons" class="nav-buttons">
+
+        <a href="service-line-dz/login.html" class="btn btn-ghost">Sign In</a>
+        <a href="service-line-dz/register.html" class="btn btn-primary">Get Started</a>
+
+</div>
+
+<div
+  id="accountSection"
+  class="nav-buttons"
+  style="display:none;">
+
+ <div id="accountSettings" class="account-settings">
+    <button id="settingsBtn" class="settings-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21a8 8 0 0 0-16 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
+    </button>
+    <div id="settingsMenu" class="settings-menu" style="display:none;">
+      <div class="settings-menu-title">
+        My Account
+      </div>
+      <button id="logoutBtn">
+        <span>Logout</span>
+        <svg width="20" height="20" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor"
+         stroke-width="2">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+      </button>
+      <button id="deleteAccountBtn">
+
+    <span>Delete Account</span>
+
+    <svg width="20" height="20" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor"
+         stroke-width="2">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+      <path d="M10 11v6"></path>
+      <path d="M14 11v6"></path>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+    </svg>
+
+  </button>
+    </div>
+  </div>
+
+</div>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav">
+    <a href="../index.html">Home</a>
+    <a href="search.html">Find Professionals</a>
+    <a href="../index.html#categories">Categories</a>
+    <a href="../index.html#how-it-works">How It Works</a>
+    <a href="login.html" class="btn btn-secondary">Sign In</a>
+    <a href="register.html" class="btn btn-primary">Get Started</a>
+  </div>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span>/</span>
+        <span>Find Professionals</span>
+      </div>
+      <h1>Find Professionals</h1>
+      <p>Search and connect with verified service providers across Algeria</p>
+    </div>
+  </section>
+
+  <!-- Search Box -->
+  <section class="search-section" style="padding-top: 0; margin-top: 0;">
+    <div class="container">
+      <form class="search-box">
+        <div class="search-input-group">
+          <label>Service</label>
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <select id="serviceSearch"><option value="">All Categories</option></select>
+        </div>
+        <div class="search-input-group">
+          <label>Location</label>
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <select name="location">
+    <option value="">All Wilayas</option>
+</select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <div class="results-header">
+
+    <div class="results-filter">
+        <label for="profileFilter">Show</label>
+
+        <select id="profileFilter">
+            <option value="all">All Professionals</option>
+            <option value="saved">Saved Professionals</option>
+        </select>
+    </div>
+          <!-- Pagination -->
+    <nav class="pagination" aria-label="Search results pages">
+        <button disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <button class="active">1</button>
+
+        <button>
+            <svg width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+    </nav>
+
+</div>
+
+<!--Result-->
+<div class="results-grid" id="resultsGrid"></div>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <div class="logo-icon">SL</div>
+            ServiceLine<span>DZ</span>
+          </a>
+          <p>Connecting clients with trusted service providers across Algeria since 2024.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+              </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                <rect x="2" y="9" width="4" height="12"></rect>
+                <circle cx="4" cy="4" r="2"></circle>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>For Clients</h4>
+          <ul>
+            <li><a href="search.html">Find Professionals</a></li>
+            <li><a href="index.html#categories">Browse Categories</a></li>
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="#">Safety & Trust</a></li>
+            <li><a href="#">Help Center</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>For Providers</h4>
+          <ul>
+            <li><a href="register.html">Become a Provider</a></li>
+            <li><a href="dashboard.html">Provider Dashboard</a></li>
+            <li><a href="#">Success Stories</a></li>
+            <li><a href="#">Resources</a></li>
+            <li><a href="#">Community</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 ServiceLine DZ. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="confirmModal" class="modal-overlay">
+
+  <div class="modal-box">
+
+    <div id="modalIcon" class="modal-icon">
+      <!-- Icon inserted by JavaScript -->
+    </div>
+
+    <h3 id="modalTitle">
+      Confirmation
+    </h3>
+
+    <p id="modalMessage">
+      Are you sure?
+    </p>
+
+    <p id="modalWarning" class="modal-warning" style="display:none;">
+      ⚠ This action cannot be undone.
+    </p>
+
+    <div class="modal-actions">
+
+      <button
+        id="cancelModalBtn"
+        class="btn btn-secondary">
+        Cancel
+      </button>
+
+      <button
+        id="confirmModalBtn"
+        class="btn btn-primary">
+        Confirm
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  <script src="js/main.js"></script>
+  <script>
+    const userId =
+    localStorage.getItem("userId");
+    
+    const guestButtons =
+    document.getElementById("guestButtons");
+    
+    const accountSection =
+    document.getElementById("accountSection");
+    
+    if (userId) {
+    
+        guestButtons.style.display = "none";
+    
+        accountSection.style.display = "flex";
+    
+    }
+
+    const logoutBtn =
+document.getElementById("logoutBtn");
+
+const deleteAccountBtn =
+document.getElementById("deleteAccountBtn");
+
+    const accountSettings =
+  document.getElementById(
+    "accountSettings"
+  );
+
+const settingsBtn =
+  document.getElementById(
+    "settingsBtn"
+  );
+
+const settingsMenu =
+  document.getElementById(
+    "settingsMenu"
+  );
+
+settingsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (settingsMenu.style.display === "block") {
+        settingsMenu.style.display = "none";
+    } else {
+        settingsMenu.style.display = "block";
+    }
+});
+
+document.addEventListener("click", () => {
+    settingsMenu.style.display = "none";
+});
+
+const modal =
+document.getElementById("confirmModal");
+
+const modalTitle =
+document.getElementById("modalTitle");
+
+const modalMessage =
+document.getElementById("modalMessage");
+
+const modalIcon =
+document.getElementById("modalIcon");
+
+const confirmBtn =
+document.getElementById("confirmModalBtn");
+
+const cancelBtn =
+document.getElementById("cancelModalBtn");
+
+function showConfirm(
+  title,
+  message,
+  icon,
+  btnClass,
+  btnText,
+  callback
+) {
+
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+
+  modalIcon.innerHTML = icon;
+
+  confirmBtn.textContent = btnText;
+
+  confirmBtn.className = btnClass;
+
+  modal.classList.add("active");
+
+  confirmBtn.onclick = () => {
+
+    modal.classList.remove("active");
+
+    callback();
+  };
+
+  cancelBtn.onclick = () => {
+
+    modal.classList.remove("active");
+  };
+}
+
+
+// LOGOUT
+logoutBtn.addEventListener("click", () => {
+
+  showConfirm(
+
+    "Logout",
+
+    "Are you sure you want to log out?",
+
+    `
+    <svg width="40" height="40" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+    `,
+
+    "btn btn-primary",
+
+    "Logout",
+
+    () => {
+
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userType");
+
+      window.location.href = "login.html";
+
+    }
+
+  );
+
+});
+
+
+// DELETE ACCOUNT
+deleteAccountBtn.addEventListener("click", () => {
+
+  showConfirm(
+
+    "Delete Account",
+
+    "This action cannot be undone.",
+
+    `
+    <svg width="40" height="40" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6"/>
+      <path d="M14 11v6"/>
+      <path d="M9 6V4h6v2"/>
+    </svg>
+    `,
+
+    "btn btn-danger",
+
+    "Delete",
+
+    () => {
+
+      const userId =
+localStorage.getItem("userId");
+
+fetch("api/delete_account.php", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    userId
+  })
+})
+.then(response => response.json())
+.then(data => {
+
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
+
+  localStorage.clear();
+
+  alert("Account deleted successfully");
+
+  window.location.href = "../index.html";
+
+})
+.catch(error => {
+
+  console.error(error);
+
+  alert("Something went wrong");
+
+});
+
+    }
+
+  );
+
+});
+
+
+
+    async function testApi() {
+    
+        const response =
+        await fetch("api/get_profiles.php");
+    
+        const data =
+        await response.json();
+    
+        console.log(data);
+
+        const categoriesResponse =
+            await fetch("api/get_categories.php");
+        
+        const categoriesData =
+            await categoriesResponse.json();
+        
+        const categoriesMap = {};
+
+        categoriesData.forEach(cat => {
+        
+            categoriesMap[cat.idCategorie] =
+                cat.nomCategorie;
+        
+        });
+    
+        const profiles = data.profiles;
+
+
+        const container =
+        document.getElementById(
+            "resultsGrid"
+        );
+
+        profiles.forEach(profile => {
+
+    const photo =
+        profile.profilePhoto
+            ? profile.profilePhoto
+            : "uploads/default-avatar.png";
+        
+    const additionalCategories =
+        profile.additionalCategories
+            ? JSON.parse(profile.additionalCategories)
+            : [];
+    
+    const additionalCategoryNames =
+        additionalCategories.map(id =>
+            categoriesMap[id] || id
+        );
+
+    container.innerHTML += `
+
+<article class="professional-card">
+
+    <div class="professional-cover">
+
+        <img
+            src="${photo}"
+            alt="${profile.fullName}"
+            class="professional-avatar"
+        >
+
+        <span class="professional-badge">
+            Verified
+        </span>
+
+    </div>
+
+    <div class="professional-content">
+
+        <h3 class="professional-name">
+            ${profile.fullName}
+        </h3>
+
+        <p class="main-category">
+            ${profile.mainCategoryName || "No Category"}
+        </p>
+
+        <div class="professional-location">
+
+            <svg width="16"
+                 height="16"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+
+                <circle cx="12"
+                        cy="10"
+                        r="3"></circle>
+
+            </svg>
+
+            ${profile.commune ? profile.commune + ", " : ""}${profile.wilayaName}
+
+        </div>
+
+        <div class="professional-tags">
+
+            ${
+                additionalCategoryNames.length > 0
+                ?
+                additionalCategoryNames
+                    .map(category => `
+                        <span class="tag">
+                            ${category}
+                        </span>
+                    `)
+                    .join("")
+                :
+                ""
+            }
+
+        </div>
+
+        <div class="professional-footer">
+
+            <a
+                href="profile.html?id=${profile.profileId}"
+                class="btn btn-primary btn-sm">
+
+                View Profile
+
+            </a>
+
+        </div>
+
+    </div>
+
+</article>
+
+`;
+});
+    }
+
+    async function loadSearchCategories() {
+
+    const response =
+        await fetch(
+            "api/get_categories.php"
+        );
+
+    const data =
+        await response.json();
+
+    const select =
+        document.getElementById(
+            "serviceSearch"
+        );
+
+    data.forEach(category => {
+    
+        select.innerHTML += `
+            <option value="${category.idCategorie}">
+                ${category.nomCategorie}
+            </option>
+        `;
+    
+    });
+
+}
+    
+    testApi();
+    
+
+  </script>
+</body>
+</html>
