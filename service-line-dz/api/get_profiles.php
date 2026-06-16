@@ -118,8 +118,7 @@ SELECT
         0
     ) AS averageRating,
 
-    COUNT(av.idAvis)
-    AS reviewsCount
+    COUNT(DISTINCT av.idAvis) AS reviewsCount
 
 FROM profil_artisan p
 

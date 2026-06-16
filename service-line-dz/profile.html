@@ -727,6 +727,23 @@
 
 }
 
+.delete-review-btn {
+    margin-top: 0.5rem;
+
+    color: #ef4444;
+    background: none;
+    border: none;
+
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    padding: 0;
+}
+
+.delete-review-btn:hover {
+    text-decoration: underline;
+}
+
   </style>
 </head>
 <body>
@@ -1108,9 +1125,6 @@
 </div>
 
       </div>
-
-
-            <!-- Reviews Section -->
              
           
 
@@ -1625,6 +1639,19 @@ const settingsMenu =
     "settingsMenu"
   );
 
+let currentClientId = null;
+
+fetch(
+    `api/get_client_id.php?userId=${userId}`
+)
+.then(response => response.json())
+.then(data => {
+
+    currentClientId =
+        data.idClient;
+
+});
+
 settingsBtn.addEventListener("click", (e) => {
     e.stopPropagation();
 
@@ -1996,7 +2023,7 @@ const portfolioGallery =
 
 portfolioGallery.innerHTML = "";
 
-const portfolioImages = JSON.parse(
+portfolioImages = JSON.parse(
   profile.portfolio || "[]"
 );
 
@@ -2324,6 +2351,22 @@ fetch(
 
           </p>
 
+          ${
+              review.idClient == currentClientId
+              ?
+              `
+              <button
+                  class="delete-review-btn"
+                  onclick="deleteReview(${review.idAvis})">
+          
+                  Delete Review
+          
+              </button>
+              `
+              :
+              ""
+          }
+
         </div>
 
       `;
@@ -2452,6 +2495,55 @@ document.getElementById(
 
   }
 );
+
+function deleteReview(reviewId) {
+
+  const userId =
+        localStorage.getItem("userId");
+
+    if (
+        !confirm(
+            "Delete this review?"
+        )
+    ) {
+        return;
+    }
+
+    fetch(
+        "api/delete_review.php",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+            body: JSON.stringify({
+                userId,
+                reviewId
+            })
+        }
+    )
+    .then(response =>
+        response.json()
+    )
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+        }
+
+        alert(
+            "Review deleted successfully"
+        );
+
+        location.reload();
+
+    });
+
+}
   
   </script>
 </body>

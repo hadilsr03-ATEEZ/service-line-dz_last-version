@@ -854,6 +854,10 @@ fetch("api/delete_account.php", {
 
 
     async function testApi() {
+
+      ///////////////////pagination///////////////////////
+        let currentPage = 1;
+        const profilesPerPage = 9;
     
         const categoryId =
             document.getElementById(
@@ -908,7 +912,7 @@ fetch("api/delete_account.php", {
         
         });
     
-        const profiles = data.profiles;
+        const allProfiles = data.profiles;
 
         const container =
         document.getElementById(
@@ -916,7 +920,9 @@ fetch("api/delete_account.php", {
         );
 
 
-        if (profiles.length === 0) {
+
+
+        if (allProfiles.length === 0){
 
     const message =
         saved == 1
@@ -945,9 +951,79 @@ fetch("api/delete_account.php", {
     return;
 }
 
+const start =
+    (currentPage - 1) * profilesPerPage;
+
+const end =
+    start + profilesPerPage;
+
+const profiles =
+    allProfiles.slice(start, end);
+
+const totalPages =
+    Math.ceil(
+        allProfiles.length /
+        profilesPerPage
+    );
+
         container.innerHTML = "";
 
         profiles.forEach(profile => {
+
+          //////pagination_loop/////////
+
+          const pagination =
+    document.querySelector(".pagination");
+
+if (totalPages <= 1) {
+
+    pagination.style.display = "none";
+
+} else {
+
+    pagination.style.display = "flex";
+
+    pagination.innerHTML = "";
+
+    pagination.innerHTML += `
+        <button
+            ${currentPage === 1 ? "disabled" : ""}
+            onclick="changePage(${currentPage - 1})">
+            ←
+        </button>
+    `;
+
+    for (
+        let i = 1;
+        i <= totalPages;
+        i++
+    ) {
+
+        pagination.innerHTML += `
+            <button
+                class="${
+                    i === currentPage
+                    ? "active"
+                    : ""
+                }"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    pagination.innerHTML += `
+        <button
+            ${
+                currentPage === totalPages
+                ? "disabled"
+                : ""
+            }
+            onclick="changePage(${currentPage + 1})">
+            →
+        </button>
+    `;
+}
 
     const photo =
         profile.photoProfil
@@ -1073,6 +1149,13 @@ fetch("api/delete_account.php", {
 
 `;
 });
+    }
+
+    function changePage(page) {
+    
+        currentPage = page;
+    
+        testApi();
     }
 
     async function loadSearchCategories() {

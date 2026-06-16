@@ -61,7 +61,7 @@ $reviewsSql = "
 SELECT
 
     a.*,
-
+    c.idClient,
     u.nomComplet
 
 FROM avis a
