@@ -761,11 +761,19 @@
         <a href="../index.html#categories">Categories</a>
         <a href="../index.html#how-it-works">How It Works</a>
       </div>
-      
-      <div class="nav-buttons">
 
-  <div id="accountSettings" class="account-settings">
+      <div id="guestButtons" class="nav-buttons">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
 
+
+      <div
+  id="accountSection"
+  class="nav-buttons"
+  style="display:none;">
+
+ <div id="accountSettings" class="account-settings">
     <button id="settingsBtn" class="settings-btn">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
            stroke="currentColor" stroke-width="2"
@@ -774,30 +782,36 @@
         <circle cx="12" cy="8" r="4"></circle>
       </svg>
     </button>
-
     <div id="settingsMenu" class="settings-menu" style="display:none;">
-
       <div class="settings-menu-title">
         My Account
       </div>
-
-      <button onclick="location.href='edit_profile.html'">
-        <span>Edit Profile</span>
-        <span>✏️</span>
-      </button>
-
       <button id="logoutBtn">
         <span>Logout</span>
-        <span>🚪</span>
+        <svg width="20" height="20" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor"
+         stroke-width="2">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
       </button>
+      <button id="deleteAccountBtn">
 
-      <button id="deleteProfileBtn">
-        <span>Delete Profile</span>
-        <span>🗑️</span>
-      </button>
+    <span>Delete Account</span>
 
+    <svg width="20" height="20" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor"
+         stroke-width="2">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+      <path d="M10 11v6"></path>
+      <path d="M14 11v6"></path>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+    </svg>
+
+  </button>
     </div>
-
   </div>
 
 </div>
@@ -1387,6 +1401,8 @@
       </div>
     </div>
   </footer>
+
+</div>
 
   <script src="js/main.js">
   </script>

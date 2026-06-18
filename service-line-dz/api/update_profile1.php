@@ -18,6 +18,28 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $profileId = $_POST["profileId"] ?? null;
 
+
+$getProfile = $conn->prepare(
+    "SELECT profilePhoto,
+            coverPhoto,
+            portfolioPhotos,
+            qualificationFiles
+     FROM profiles
+     WHERE profileId = ?"
+);
+
+$getProfile->bind_param(
+    "i",
+    $profileId
+);
+
+$getProfile->execute();
+
+$oldProfile =
+    $getProfile
+    ->get_result()
+    ->fetch_assoc();
+
 if (!$profileId) {
     echo json_encode([
         "error" => "Profile ID missing"
@@ -25,30 +47,9 @@ if (!$profileId) {
     exit;
 }
 
-$getProfile = $conn->prepare("
-    SELECT
-        photoProfil,
-        photoCouverture,
-        portfolio,
-        diplomes
-    FROM profil_artisan
-    WHERE idProfil = ?
-");
-
-$getProfile->bind_param("i", $profileId);
-$getProfile->execute();
-
-$oldProfile = $getProfile
-    ->get_result()
-    ->fetch_assoc();
-
-/* =========================
-   Required Fields
-========================= */
-
 $fullName = trim($_POST["fullName"] ?? "");
-$aboutMe  = trim($_POST["aboutMe"] ?? "");
-$phone    = trim($_POST["phone"] ?? "");
+$aboutMe = trim($_POST["aboutMe"] ?? "");
+$phone = trim($_POST["phone"] ?? "");
 
 if (
     empty($fullName) ||
@@ -70,39 +71,44 @@ $instagram = trim($_POST["instagram"] ?? "");
 $facebook = trim($_POST["facebook"] ?? "");
 $tiktok = trim($_POST["tiktok"] ?? "");
 
-$wilaya = intval($_POST["wilaya"] ?? 0);
-$commune = intval($_POST["commune"] ?? 0);
-
-$address = trim($_POST["address"] ?? "");
-
+$wilaya = trim($_POST["wilaya"] ?? "");
+$commune = trim($_POST["commune"] ?? "");
 $experience = trim($_POST["experience"] ?? "");
 $qualifications = trim($_POST["qualifications"] ?? "");
 
-$mainCategory = intval($_POST["mainCategory"] ?? 0);
-
-$additionalCategories = json_decode(
-    $_POST["additionalCategories"] ?? "[]",
-    true
-);
-
-if (!is_array($additionalCategories)) {
-    $additionalCategories = [];
-}
+$mainCategory = $_POST["mainCategory"] ?? "";
+$additionalCategories = $_POST["additionalCategories"] ?? "[]";
 
 $days = $_POST["days"] ?? [];
 
-$serviceAreas = json_decode(
-    $_POST["serviceAreas"] ?? "[]",
-    true
-);
+$availabilityData = [];
 
-if (!is_array($serviceAreas)) {
-    $serviceAreas = [];
+foreach ($days as $day) {
+
+    $availabilityData[$day] = [
+
+        "start" =>
+            $_POST[$day . "_start"]
+            ?? "",
+
+        "end" =>
+            $_POST[$day . "_end"]
+            ?? ""
+
+    ];
 }
 
-$emergencyServices =
-    isset($_POST["emergencyServices"]) ? 1 : 0;
+$availability =
+    json_encode(
+        $availabilityData
+    );
 
+$serviceAreas = $_POST["serviceAreas"] ?? "[]";
+
+$emergencyServices =
+    isset($_POST["emergencyServices"])
+    ? 1
+    : 0;
 
 /* =========================
    Upload Folder
@@ -119,7 +125,7 @@ if (!file_exists($uploadDir)) {
 ========================= */
 
 $profilePhoto =
-    $oldProfile["photoProfil"];
+    $oldProfile["profilePhoto"];
 
 if (
     isset($_FILES["profilePhoto"]) &&
@@ -148,7 +154,7 @@ if (
 ========================= */
 
 $coverPhoto =
-    $oldProfile["photoCouverture"];
+    $oldProfile["coverPhoto"];
 
 if (
     isset($_FILES["coverPhoto"]) &&
@@ -172,20 +178,22 @@ if (
     }
 }
 
-
 /* =========================
    Portfolio Photos
 ========================= */
 
 $portfolioPaths =
     json_decode(
-        $_POST["existingPortfolio"] ?? "[]",
+        $oldProfile["portfolioPhotos"]
+        ?? "[]",
         true
     );
-
-if (!is_array($portfolioPaths)) {
-    $portfolioPaths = [];
-}
+$qualificationPaths =
+    json_decode(
+        $oldProfile["qualificationFiles"]
+        ?? "[]",
+        true
+    );
 
 if (isset($_FILES["portfolioPhotos"])) {
 
@@ -223,19 +231,11 @@ if (isset($_FILES["portfolioPhotos"])) {
 }
 
 
+
+
 /* =========================
    Qualification Files
 ========================= */
-
-$qualificationPaths =
-    json_decode(
-        $_POST["existingQualifications"] ?? "[]",
-        true
-    );
-
-if (!is_array($qualificationPaths)) {
-    $qualificationPaths = [];
-}
 
 if (isset($_FILES["qualificationFiles"])) {
 
@@ -255,7 +255,8 @@ if (isset($_FILES["qualificationFiles"])) {
                     $_FILES["qualificationFiles"]["name"][$key]
                 );
 
-            $target = $uploadDir . $fileName;
+            $target =
+                $uploadDir . $fileName;
 
             if (
                 move_uploaded_file(
@@ -271,43 +272,11 @@ if (isset($_FILES["qualificationFiles"])) {
     }
 }
 
-$portfolio = json_encode($portfolioPaths);
-$diplomes = json_encode($qualificationPaths);
+$portfolioPhotos =
+    json_encode($portfolioPaths);
 
-/* =========================
-   Update utilisateur
-========================= */
-
-$sql = "
-UPDATE utilisateur u
-INNER JOIN artisan a
-    ON u.idUtilisateur = a.idUtilisateur
-INNER JOIN profil_artisan p
-    ON a.idArtisan = p.idArtisan
-SET
-    u.nomComplet = ?,
-    u.telephone = ?
-WHERE
-    p.idProfil = ?
-";
-
-$stmt = $conn->prepare($sql);
-
-$stmt->bind_param(
-    "ssi",
-    $fullName,
-    $phone,
-    $profileId
-);
-
-if (!$stmt->execute()) {
-
-    echo json_encode([
-        "error" => $stmt->error
-    ]);
-
-    exit;
-}
+$qualificationFiles =
+    json_encode($qualificationPaths);
 
 /* =========================
    Update profil_artisan
@@ -331,8 +300,7 @@ SET
     facebook = ?,
     tiktok = ?,
     urgence = ?
-WHERE
-    idProfil = ?
+WHERE idProfil = ?
 ";
 
 $stmt = $conn->prepare($sql);
@@ -368,140 +336,107 @@ if (!$stmt->execute()) {
     exit;
 }
 
-/* =========================
-   Update Categories
-========================= */
+echo json_encode([
+    "success" => true,
+    "profileId" => $profileId
+]);
 
-// Delete old categories
-$deleteCategories = $conn->prepare("
-    DELETE FROM categorie_artisan
-    WHERE idProfil = ?
-");
+$conn->close();
+exit;
 
-$deleteCategories->bind_param(
-    "i",
-    $profileId
-);
 
-$deleteCategories->execute();
+foreach ($days as $day) {
 
-// Main category
-if (!empty($mainCategory)) {
+    $startTime =
+        $_POST[$day . "_start"]
+        ?? null;
 
-    $mainSql = "
-    INSERT INTO categorie_artisan
+    $endTime =
+        $_POST[$day . "_end"]
+        ?? null;
+
+    $availabilitySql = "
+    INSERT INTO availability
     (
-        idProfil,
-        idCategorie,
-        type
+        providerId,
+        dayOfWeek,
+        startTime,
+        endTime,
+        isActive
     )
     VALUES
     (
-        ?, ?, 'MAIN'
+        ?, ?, ?, ?, 1
     )
     ";
 
-    $mainStmt = $conn->prepare($mainSql);
-
-    $mainStmt->bind_param(
-        "ii",
-        $profileId,
-        $mainCategory
-    );
-
-    $mainStmt->execute();
-}
-
-// Additional categories
-if (!empty($additionalCategories)) {
-
-    foreach ($additionalCategories as $categoryId) {
-
-        $categoryId = intval($categoryId);
-
-        if ($categoryId == 0) {
-            continue;
-        }
-
-        $additionalSql = "
-        INSERT INTO categorie_artisan
-        (
-            idProfil,
-            idCategorie,
-            type
-        )
-        VALUES
-        (
-            ?, ?, 'ADDITIONAL'
-        )
-        ";
-
-        $additionalStmt = $conn->prepare($additionalSql);
-
-        $additionalStmt->bind_param(
-            "ii",
-            $profileId,
-            $categoryId
+    $availabilityStmt =
+        $conn->prepare(
+            $availabilitySql
         );
 
-        $additionalStmt->execute();
-    }
+    $availabilityStmt->bind_param(
+        "isss",
+        $userId,
+        $day,
+        $startTime,
+        $endTime
+    );
+
+    $availabilityStmt->execute();
 }
 
 /* =========================
-   Update Services
+   Insert Services
 ========================= */
 
-// Delete old services
-$deleteServices = $conn->prepare("
-    DELETE FROM service
-    WHERE idProfil = ?
-");
-
-$deleteServices->bind_param(
-    "i",
-    $profileId
-);
-
-$deleteServices->execute();
-
-// Insert new services
 if (
     isset($_POST["serviceName"]) &&
     isset($_POST["serviceDescription"]) &&
     isset($_POST["servicePrice"])
 ) {
 
-    $serviceNames = $_POST["serviceName"];
-    $serviceDescriptions = $_POST["serviceDescription"];
-    $servicePrices = $_POST["servicePrice"];
+    $serviceNames =
+        $_POST["serviceName"];
 
-    $serviceSql = "
-    INSERT INTO service
-    (
-        idProfil,
-        titre,
-        description,
-        prix
-    )
-    VALUES
-    (
-        ?, ?, ?, ?
-    )
-    ";
+    $serviceDescriptions =
+        $_POST["serviceDescription"];
 
-    $serviceStmt = $conn->prepare($serviceSql);
+    $servicePrices =
+        $_POST["servicePrice"];
 
-    for ($i = 0; $i < count($serviceNames); $i++) {
+    for (
+        $i = 0;
+        $i < count($serviceNames);
+        $i++
+    ) {
 
         if (
-            empty(trim($serviceNames[$i])) ||
-            empty(trim($serviceDescriptions[$i]))
+            empty($serviceNames[$i]) ||
+            empty($serviceDescriptions[$i])
         ) {
             continue;
         }
 
-        $price = floatval($servicePrices[$i]);
+        $serviceSql = "
+        INSERT INTO services
+        (
+            profileId,
+            serviceName,
+            serviceDescription,
+            startingPrice
+        )
+        VALUES
+        (
+            ?, ?, ?, ?
+        )
+        ";
+
+        $serviceStmt =
+            $conn->prepare($serviceSql);
+
+        $price =
+            floatval($servicePrices[$i]);
 
         $serviceStmt->bind_param(
             "issd",
@@ -516,70 +451,6 @@ if (
 }
 
 /* =========================
-   Update Availability
-========================= */
-
-// Delete old availability
-$deleteAvailability = $conn->prepare("
-    DELETE FROM disponibilite
-    WHERE idProfil = ?
-");
-
-$deleteAvailability->bind_param(
-    "i",
-    $profileId
-);
-
-$deleteAvailability->execute();
-
-// Insert new availability
-if (!empty($days)) {
-
-    $availabilitySql = "
-    INSERT INTO disponibilite
-    (
-        idProfil,
-        jourSemaine,
-        heureDebut,
-        heureFin
-    )
-    VALUES
-    (
-        ?, ?, ?, ?
-    )
-    ";
-
-    $availabilityStmt =
-        $conn->prepare($availabilitySql);
-
-    foreach ($days as $day) {
-
-        $startTime =
-            $_POST[$day . "_start"] ?? null;
-
-        $endTime =
-            $_POST[$day . "_end"] ?? null;
-
-        if (
-            empty($startTime) ||
-            empty($endTime)
-        ) {
-            continue;
-        }
-
-        $availabilityStmt->bind_param(
-            "isss",
-            $profileId,
-            $day,
-            $startTime,
-            $endTime
-        );
-
-        $availabilityStmt->execute();
-    }
-}
-
-/* =========================
    Success
 ========================= */
 
@@ -589,4 +460,5 @@ echo json_encode([
 ]);
 
 $conn->close();
-exit;
+
+?>

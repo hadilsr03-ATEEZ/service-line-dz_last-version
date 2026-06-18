@@ -979,10 +979,6 @@
           <img src="image/slLogo.png" alt="ServiceLine Logo" class="logo-img">
           ServiceLine<span>DZ</span>
         </a>
-        <div class="nav-buttons">
-          <a href="login.html" class="btn btn-ghost">Sign In</a>
-          <a href="register.html" class="btn btn-primary">Get Started</a>
-        </div>
       </div>
     </nav>
 
@@ -1524,7 +1520,7 @@
               <span>Add Photos</span>
             </label>
           </div>
-          <p style="font-size: 0.8125rem; color: var(--text-muted);">Add photos of your previous work so clients can see the quality of your services.</p>
+          <p style="font-size: 0.8125rem; color: var(--text-muted);">Add 10 photos of your previous work so clients can see the quality of your services.</p>
         </div>
 
         <!-- Availability Section -->
@@ -1735,55 +1731,80 @@
       console.log("PROFILE DATA:", responseData);
 
       const profileData = responseData.profile;
+      document.getElementById("fullName").value =
+          profileData.nomComplet || "";
+      document.getElementById("aboutMe").value =
+          profileData.description || "";
+      document.getElementById("phone").value =
+          profileData.telephone || "";
+      
       
       console.log("PROFILE:", responseData.profile);
       
       console.log("SERVICES:", responseData.services);
       
       // Pre-fill Basic Information
-      if (profileData.fullName) document.getElementById('fullName').value = profileData.fullName;
-      if (profileData.aboutMe) document.getElementById('aboutMe').value = profileData.aboutMe;
+      if (profileData.fullName) document.getElementById("fullName").value = profileData.nomComplet || "";
+      if (profileData.aboutMe) document.getElementById("aboutMe").value = profileData.description || "";
       
       // Pre-fill Contact Information
-      if (profileData.phone) document.getElementById('phone').value = profileData.phone;
-      if (profileData.whatsapp) document.getElementById('whatsapp').value = profileData.whatsapp;
-      if (profileData.instagram) document.getElementById('instagram').value = profileData.instagram;
-      if (profileData.facebook) document.getElementById('facebook').value = profileData.facebook;
-      if (profileData.tiktok) document.getElementById('tiktok').value = profileData.tiktok;
+      if (profileData.phone) document.getElementById("phone").value = profileData.telephone || "";
+      if (profileData.whatsapp) document.getElementById("whatsapp").value = profileData.whatsapp || "";
+      if (profileData.instagram) document.getElementById("instagram").value = profileData.instagram || "";
+      if (profileData.facebook) document.getElementById("facebook").value = profileData.facebook || "";
+      if (profileData.tiktok) document.getElementById("tiktok").value = profileData.tiktok || "";
       
       // Pre-fill Location
-      if (profileData.wilayaId) document.getElementById('wilaya').value = profileData.wilayaId;
-      if (profileData.commune) document.getElementById('commune').value = profileData.commune;
+      const wilayaSelect = document.getElementById("wilaya");
+      for (const option of wilayaSelect.options) {
+          if (
+              option.textContent.trim() === profileData.nomWilaya
+          ) {
+              wilayaSelect.value = option.value;
+              break;
+          }
+      }
+
+      await loadCommunes(wilayaSelect.value);
+      document.getElementById("commune").value = profileData.idVille;
+
+      document
+      .getElementById("wilaya")
+      .addEventListener("change", function () {
       
+          loadCommunes(this.value);
+      
+      });
+
+      if (profileData.adresse) document.getElementById("address").value = profileData.adresse;
+      
+
+
       // Pre-fill Qualifications & Experience
-      if (profileData.experience) document.getElementById('experience').value = profileData.experience;
+      if (profileData.anneesExperience) document.getElementById('experience').value = profileData.anneesExperience;
       if (profileData.qualifications) document.getElementById('qualifications').value = profileData.qualifications;
       
-      // Pre-fill Categories
-      if (profileData.mainCategoryId) {
-        selectedMainCategory = profileData.mainCategoryId.toString();
-        selectMainCategory(profileData.mainCategoryId.toString());
-      }
-      if (profileData.additionalCategories) {
+      // Main Category
+      if (responseData.mainCategory) {
       
-        const additionalCategories =
-          JSON.parse(
-            profileData.additionalCategories
+          selectMainCategory(
+              responseData.mainCategory.idCategorie.toString()
           );
       
-        additionalCategories.forEach(
-          (cat) => {
+      }
       
-            if (
-              !selectedAdditionalCategories.includes(cat)
-            ) {
-              selectedAdditionalCategories.push(cat);
-            }
+      // Pre-fill Categories
+      if (responseData.additionalCategories) {
       
-          }
-        );
+          responseData.additionalCategories.forEach(cat => {
       
-        renderAdditionalCategoryChips();
+              selectedAdditionalCategories.push(
+                  cat.idCategorie.toString()
+              );
+      
+          });
+      
+          renderAdditionalCategoryChips();
       
       }
       
@@ -1792,53 +1813,40 @@
         const servicesList = document.getElementById('servicesList');
         servicesList.innerHTML = '';
         responseData.services.forEach((service) => {
-          addServiceItem(service.serviceName, service.startingPrice, service.serviceDescription);
+          addServiceItem(service.titre, service.prix, service.description);
           }
         );
       }
       
       // Pre-fill Availability
-      if (profileData.availability) {
+      if (responseData.availability && Array.isArray(responseData.availability)) {
       
-        const availability =
-          JSON.parse(
-            profileData.availability
-          );
+          responseData.availability.forEach(item => {
       
-        Object.keys(
-          availability
-        ).forEach((day) => {
+              const day = item.jourSemaine;
       
-          const dayCheckbox =
-            document.getElementById(day);
+              const checkbox = document.getElementById(day);
       
-          if (
-            dayCheckbox &&
-            availability[day]
-          ) {
+              if (checkbox) {
       
-            dayCheckbox.checked = true;
+                  checkbox.checked = true;
       
-            document.querySelector(
-              `input[name="${day}_start"]`
-            ).value =
-              availability[day].start ||
-              "08:00";
+                  document.querySelector(
+                      `input[name="${day}_start"]`
+                  ).value = item.heureDebut.substring(0,5);
       
-            document.querySelector(
-              `input[name="${day}_end"]`
-            ).value =
-              availability[day].end ||
-              "17:00";
+                  document.querySelector(
+                      `input[name="${day}_end"]`
+                  ).value = item.heureFin.substring(0,5);
       
-          }
+              }
       
-        });
+          });
       
       }
       
       // Pre-fill Emergency Services
-      if (profileData.emergencyServices == 1) {
+      if (profileData.urgence == 1) {
         document.getElementById('emergencyServices').checked = true;
       }
       
@@ -1849,36 +1857,38 @@
       }
       
       // Pre-fill Photos (display only, not re-upload)
-      if (profileData.profilePhoto) {
+      if (profileData.photoProfil) {
         const preview = document.getElementById('profilePhotoPreview');
-        preview.src = profileData.profilePhoto;
+        preview.src = profileData.photoProfil;
         preview.style.display = 'block';
         document.querySelector('.upload-area.profile-photo .upload-content').style.display = 'none';
       }
-      if (profileData.coverPhoto) {
+      if (profileData.photoCouverture) {
         const preview = document.getElementById('coverPhotoPreview');
-        preview.src = profileData.coverPhoto;
+        preview.src = profileData.photoCouverture;
         preview.style.display = 'block';
         document.querySelector('.upload-area.cover-photo .upload-content').style.display = 'none';
       }
 
       // Pre-fill Portfolio Photos
-      if (profileData.portfolioPhotos) {
+      if (profileData.portfolio) {
       
         const portfolioPhotosData =
           JSON.parse(
-            profileData.portfolioPhotos
+            profileData.portfolio
           );
       
-        portfolioPhotosData.forEach(
-          (photoPath) => {
-      
+        portfolioPhotosData.forEach(photoPath => {
+        
             portfolioImages.push({
-              dataUrl: photoPath
+        
+                path: photoPath,
+        
+                dataUrl: photoPath
+        
             });
-      
-          }
-        );
+        
+        });
       
         renderPortfolio();
       
@@ -1886,22 +1896,24 @@
 
       // Pre-fill Qualification Files
       if (
-        profileData.qualificationFiles
+        profileData.diplomes
       ) {
       
         const qualificationFilesData =
           JSON.parse(
-            profileData.qualificationFiles
+            profileData.diplomes
           );
       
         qualificationFilesData.forEach(
           (filePath) => {
       
             qualificationFiles.push({
-              name:
-                filePath.split("/").pop(),
-              type: "application/pdf"
+                name: filePath.split("/").pop(),
+                type: "application/pdf",
+                path: filePath
             });
+
+            console.log(qualificationFiles);
       
           }
         );
@@ -1983,7 +1995,7 @@
     // ========== CANCEL EDIT ==========
     function cancelEdit() {
       if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-        window.location.href = 'profile.html';
+        window.location.href = 'profile.html?id=' + profileId;
       }
     }
 
@@ -2013,21 +2025,6 @@
     // State
     let selectedMainCategory = null;
     let selectedAdditionalCategories = [];
-
-    // Initialize dropdowns on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      loadCategories();
-      
-      // Close dropdowns when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('#mainCategoryWrapper')) {
-          closeMainCategoryDropdown();
-        }
-        if (!e.target.closest('#additionalCategoryWrapper')) {
-          closeAdditionalCategoryDropdown();
-        }
-      });
-    });
 
     // ========== MAIN CATEGORY (Single Select) ==========
     function toggleMainCategoryDropdown() {
@@ -2388,6 +2385,8 @@ function removeQualificationFile(index) {
 
 function renderQualificationFiles() {
 
+  console.log("Rendering...", qualificationFiles);
+
     const container =
         document.getElementById(
             "qualificationPreview"
@@ -2406,16 +2405,25 @@ function renderQualificationFiles() {
             item.className =
                 "qualification-file";
 
+            const isImage =
+                file.type.startsWith("image/");
+            
             const icon =
-                file.type.startsWith("image/")
-                    ? "🖼"
-                    : "📄";
+                isImage ? "🖼" : "📄";
 
             item.innerHTML = `
                 <span>
-                    ${icon} ${file.name}
+            
+                    ${
+                        file.path
+                        ? `<a href="${file.path}" target="_blank">
+                               ${icon} ${file.name}
+                           </a>`
+                        : `${icon} ${file.name}`
+                    }
+            
                 </span>
-
+            
                 <button
                     type="button"
                     onclick="removeQualificationFile(${index})">
@@ -2526,6 +2534,15 @@ function renderQualificationFiles() {
                 "profileId",
                 profileId
             );
+
+            const existingPortfolio = portfolioImages
+                .filter(img => img.path)
+                .map(img => img.path);
+            
+            formData.append(
+                "existingPortfolio",
+                JSON.stringify(existingPortfolio)
+            );
     
             // Portfolio images
             portfolioImages.forEach((img) => {
@@ -2540,15 +2557,28 @@ function renderQualificationFiles() {
                 }
     
             });
+
+            const existingQualifications = qualificationFiles
+                .filter(file => file.path)
+                .map(file => file.path);
+            
+            formData.append(
+                "existingQualifications",
+                JSON.stringify(existingQualifications)
+            );
     
             // Qualification files
             qualificationFiles.forEach(file => {
-    
-                formData.append(
-                    "qualificationFiles[]",
-                    file
-                );
-    
+            
+                if (!file.path) {
+            
+                    formData.append(
+                        "qualificationFiles[]",
+                        file
+                    );
+            
+                }
+            
             });
     
             const response = await fetch(
@@ -2616,25 +2646,24 @@ function renderQualificationFiles() {
     
         try {
     
-            const response = await fetch('api/get_categories.php');
+            const response =
+                await fetch("api/get_categories.php");
     
-            const data = await response.json();
+            const data =
+                await response.json();
     
-            if (data.success) {
+            allCategories = data.map(cat => ({
+                value: String(cat.idCategorie),
+                label: cat.nomCategorie
+            }));
     
-                allCategories = data.categories.map(category => ({
-                    value: category.categoryId.toString(),
-                    label: category.name
-                }));
+            renderMainCategoryOptions();
+            renderAdditionalCategoryOptions();
     
-                renderMainCategoryOptions();
-                renderAdditionalCategoryOptions();
+        }
+        catch (error) {
     
-            }
-    
-        } catch (error) {
-    
-            console.error('Error loading categories:', error);
+            console.error(error);
     
         }
     
@@ -2644,36 +2673,24 @@ function renderQualificationFiles() {
     
         try {
     
-            const response =
-                await fetch("api/get_wilayas.php");
-    
-            const data =
-                await response.json();
-    
-            if (data.success) {
-    
-                const wilayaSelect =
-                    document.getElementById("wilaya");
-    
-                wilayaSelect.innerHTML =
-                    '<option value="">Select Wilaya</option>';
-    
-                data.wilayas.forEach(wilaya => {
-    
-                    const option =
-                        document.createElement("option");
-    
-                    option.value =
-                        wilaya.wilayaId;
-    
-                    option.textContent =
-                        wilaya.name;
-    
-                    wilayaSelect.appendChild(option);
-    
-                });
-    
-            }
+            const response = await fetch("api/get_wilayas.php");
+            const data = await response.json();
+            
+            const wilayaSelect = document.getElementById("wilaya");
+            
+            wilayaSelect.innerHTML =
+                '<option value="">Select Wilaya</option>';
+            
+            data.forEach(wilaya => {
+            
+                const option = document.createElement("option");
+            
+                option.value = wilaya.idWilaya;
+                option.textContent = wilaya.nomWilaya;
+            
+                wilayaSelect.appendChild(option);
+            
+            });
     
         } catch (error) {
     
@@ -2682,6 +2699,39 @@ function renderQualificationFiles() {
         }
     
     }
+
+    async function loadCommunes(idWilaya) {
+
+    const response =
+        await fetch(
+            `api/get_communes.php?idWilaya=${idWilaya}`
+        );
+
+    const communes =
+        await response.json();
+
+    const communeSelect =
+        document.getElementById("commune");
+
+    communeSelect.innerHTML =
+        '<option value="">Select Commune</option>';
+
+    communes.forEach(commune => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            commune.idVille;
+
+        option.textContent =
+            commune.nomVille;
+
+        communeSelect.appendChild(option);
+
+    });
+
+}
   </script>
 </body>
 </html>

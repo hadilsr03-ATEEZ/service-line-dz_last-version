@@ -385,11 +385,9 @@
       </div>
       
       <div id="guestButtons" class="nav-buttons">
-
-        <a href="service-line-dz/login.html" class="btn btn-ghost">Sign In</a>
-        <a href="service-line-dz/register.html" class="btn btn-primary">Get Started</a>
-
-</div>
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
 
 <div
   id="accountSection"
@@ -409,6 +407,23 @@
       <div class="settings-menu-title">
         My Account
       </div>
+      <button id="myProfileBtn">
+
+    <span>My Profile</span>
+
+    <svg width="20" height="20"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2">
+
+        <circle cx="12" cy="8" r="4"></circle>
+
+        <path d="M4 20c0-4 3-6 8-6s8 2 8 6"></path>
+
+    </svg>
+
+</button>
       <button id="logoutBtn">
         <span>Logout</span>
         <svg width="20" height="20" viewBox="0 0 24 24"
@@ -742,6 +757,45 @@ function showConfirm(
     modal.classList.remove("active");
   };
 }
+
+
+// My profile
+const myProfileBtn =
+document.getElementById(
+    "myProfileBtn"
+);
+
+myProfileBtn.addEventListener(
+    "click",
+    async () => {
+
+        const response =
+            await fetch(
+                `api/check_profile.php?userId=${userId}`
+            );
+
+        const data =
+            await response.json();
+
+        if (data.hasProfile) {
+
+            window.location.href =
+                `profile.html?id=${data.idProfil}`;
+
+        }
+
+        else {
+
+            window.location.href =
+                "create_profile.html";
+
+        }
+
+    }
+);
+
+
+
 
 
 // LOGOUT
