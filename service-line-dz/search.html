@@ -52,41 +52,64 @@
   position: relative;
 }
 
-.settings-menu {
-  position: absolute;
-  top: 110%;
-  right: 0;
+.settings-menu{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
 
-  display: flex;
-  flex-direction: column;
+    width:240px;
 
-  min-width: 180px;
+    display:flex;
+    flex-direction:column;
 
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
 
-  box-shadow:
-    0 10px 25px rgba(0,0,0,0.1);
+    overflow:hidden;
 
-  overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
 
-  z-index: 100;
+    z-index:100;
 }
 
-.settings-menu button {
-  border: none;
-  background: white;
+.settings-menu button{
 
-  padding: 12px 16px;
+    width:100%;
+    height:48px;
 
-  text-align: left;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-  cursor: pointer;
+    padding:0 24px;
+
+    background:#fff;
+    border:none;
+
+    font-size:15px;
+    font-weight:500;
+
+    color:#111827;
+
+    cursor:pointer;
+
+    transition:.2s;
 }
 
-.settings-menu button:hover {
-  background: #f3f4f6;
+
+.settings-menu button:hover{
+    background:#f5f5f5;
+}
+
+.settings-menu button svg{
+
+    width:19px;
+    height:19px;
+
+    stroke:currentColor;
+
+    flex-shrink:0;
 }
 
 .settings-icon-btn {
@@ -121,58 +144,37 @@
   color: #374151;
 }
 
-.settings-menu-title {
+.settings-menu-title{
+    padding:14px 18px;
 
-  padding: 12px 16px;
+    font-size:16px;
+    font-weight:700;
 
-  font-weight: 600;
+    color:#111827;
 
-  border-bottom: 1px solid #e5e7eb;
+    background:#fff;
 
-  background: #f9fafb;
-
+    border-bottom:1px solid #e5e7eb;
 }
 
-.settings-menu {
-
-  min-width: 220px;
-
+.settings-menu button:not(:last-child){
+    border-bottom:1px solid #f1f5f9;
 }
 
-.settings-menu {
-  top: calc(100% + 6px);
+#deleteAccountBtn{
+    color:#ef4444;
 }
 
-.settings-menu button {
-
-  font-size: 15px;
-
+#deleteAccountBtn:hover{
+    background:#fef2f2;
 }
 
-.settings-menu button {
-
-  display: flex;
-  justify-content: space-between;
-
-  align-items: center;
-
-  width: 100%;
-
-  border: flex;
-  background: white;
-
-  padding: 14px 16px;
-
-  cursor: pointer;
-
+#deleteProfileBtn{
+    color:#dc2626;
 }
 
-#deleteAccountBtn {
-  color: #dc2626;
-}
-
-#deleteAccountBtn:hover {
-  background: #fef2f2;
+#deleteProfileBtn:hover{
+    background:#fef2f2;
 }
 
 .account-avatar{
@@ -407,23 +409,60 @@
       <div class="settings-menu-title">
         My Account
       </div>
+
       <button id="myProfileBtn">
+          <span>My Profile</span>
+          <svg width="20" height="20"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20c0-4 3-6 8-6s8 2 8 6"></path>
+          </svg>
+      </button>
 
-    <span>My Profile</span>
+      <button id="createProfileBtn">
+          <span>Create Profile</span>
+          <svg width="20" height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="17" y1="11" x2="23" y2="11"></line>
+          </svg>
+      </button>
 
-    <svg width="20" height="20"
-         viewBox="0 0 24 24"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2">
+      <button id="editProfileBtn">
+          <span>Edit Profile</span>
+          <svg width="20" height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <circle cx="10" cy="8" r="4"></circle>
+              <path d="M2 20c0-4 3-6 8-6"></path>
+              <path d="M15 18l5-5 2 2-5 5-3 1z"></path>
+          </svg>
+      </button>
 
-        <circle cx="12" cy="8" r="4"></circle>
+      <button id="deleteProfileBtn">
+          <span>Delete Profile</span>
+          <svg width="20" height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20c0-4 3-6 8-6s8 2 8 6"></path>
+              <line x1="18" y1="8" x2="22" y2="8"></line>
+          </svg>
+      </button>
 
-        <path d="M4 20c0-4 3-6 8-6s8 2 8 6"></path>
 
-    </svg>
-
-</button>
       <button id="logoutBtn">
         <span>Logout</span>
         <svg width="20" height="20" viewBox="0 0 24 24"
@@ -447,7 +486,6 @@
       <path d="M14 11v6"></path>
       <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
     </svg>
-
   </button>
     </div>
   </div>
@@ -655,8 +693,21 @@
 
   <script src="js/main.js"></script>
   <script>
+
+    const params = new URLSearchParams(window.location.search);
+    
+    const category = params.get("category");
+    const wilaya = params.get("wilaya");
+    
+    console.log(category, wilaya);
+
+
+
     const userId =
-    localStorage.getItem("userId");
+localStorage.getItem("userId");
+
+const userType =
+localStorage.getItem("userType");
     
     const guestButtons =
     document.getElementById("guestButtons");
@@ -671,12 +722,6 @@
         accountSection.style.display = "flex";
     
     }
-
-    const logoutBtn =
-document.getElementById("logoutBtn");
-
-const deleteAccountBtn =
-document.getElementById("deleteAccountBtn");
 
     const accountSettings =
   document.getElementById(
@@ -765,6 +810,75 @@ document.getElementById(
     "myProfileBtn"
 );
 
+const createProfileBtn =
+document.getElementById(
+    "createProfileBtn"
+);
+
+const editProfileBtn =
+document.getElementById(
+    "editProfileBtn"
+);
+
+const deleteProfileBtn =
+document.getElementById(
+    "deleteProfileBtn"
+);
+
+const logoutBtn =
+document.getElementById(
+    "logoutBtn"
+);
+
+const deleteAccountBtn =
+document.getElementById(
+    "deleteAccountBtn"
+);
+
+myProfileBtn.style.display = "none";
+createProfileBtn.style.display = "none";
+editProfileBtn.style.display = "none";
+deleteProfileBtn.style.display = "none";
+
+
+if (userType === "provider") {
+
+    fetch(
+        `api/check_profile.php?userId=${userId}`
+    )
+    .then(response => response.json())
+    .then(profile => {
+
+      console.log(profile);
+
+        if (profile.hasProfile) {
+
+            myProfileBtn.style.display = "flex";
+            editProfileBtn.style.display = "flex";
+            deleteProfileBtn.style.display = "flex";
+
+        }
+
+        else {
+
+            createProfileBtn.style.display = "flex";
+
+        }
+
+    });
+
+}
+
+createProfileBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "create_profile.html";
+
+    }
+);
+
 myProfileBtn.addEventListener(
     "click",
     async () => {
@@ -793,6 +907,121 @@ myProfileBtn.addEventListener(
 
     }
 );
+
+editProfileBtn.addEventListener(
+    "click",
+    async () => {
+
+        const response = await fetch(
+            `api/check_profile.php?userId=${userId}`
+        );
+
+        const data = await response.json();
+
+        if (data.hasProfile) {
+
+            window.location.href =
+                `edit_profile.html?id=${data.idProfil}`;
+
+        }
+
+    }
+);
+
+
+
+////Delete Profile/////
+
+deleteProfileBtn.addEventListener("click", async () => {
+
+    const response = await fetch(
+        `api/check_profile.php?userId=${userId}`
+    );
+
+    const data = await response.json();
+
+    if (!data.hasProfile) {
+
+        alert("Profile not found.");
+
+        return;
+    }
+
+    showConfirm(
+
+        "Delete Profile",
+
+        "This will permanently delete your provider profile.",
+
+        `
+        <svg width="40" height="40" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/>
+          <path d="M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+        `,
+
+        "btn btn-danger",
+
+        "Delete",
+
+        () => {
+
+            deleteProfile(data.idProfil);
+
+        }
+
+    );
+
+});
+
+async function deleteProfile(profileId) {
+
+    try {
+
+        const response = await fetch(
+            "api/delete_profile.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    profileId
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+
+        }
+
+        alert("Profile deleted successfully.");
+
+        window.location.href = "search.html";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("Something went wrong.");
+
+    }
+
+}
 
 
 
@@ -940,6 +1169,15 @@ fetch("api/delete_account.php", {
     saved,
     userId
 );
+        
+        const params = new URLSearchParams(window.location.search);
+        
+        const category =
+            params.get("category") || "";
+        
+        const wilaya =
+            params.get("wilaya") || "";
+        
         
         const response =
         await fetch(
@@ -1279,9 +1517,45 @@ document.getElementById(
     }
 );
     
-    testApi();
-    loadSearchCategories();
-    loadWilayas();
+    document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        await loadSearchCategories();
+
+        await loadWilayas();
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const category =
+            params.get("category");
+
+        const wilaya =
+            params.get("wilaya");
+
+        if (category) {
+
+            document.getElementById(
+                "serviceSearch"
+            ).value = category;
+
+        }
+
+        if (wilaya) {
+
+            document.getElementById(
+                "wilayaSearch"
+            ).value = wilaya;
+
+        }
+
+        await testApi();
+
+    }
+);
 
     document.getElementById(
         "profileFilter"

@@ -284,3 +284,349 @@ fetch("api/delete_account.php", {
   );
 
 });
+
+
+
+///////////////////////////////////////////////////////////////////////
+
+<script>
+    
+    const guestButtons =
+    document.getElementById("guestButtons");
+    
+    const accountSection =
+    document.getElementById("accountSection");
+    
+    if (userId) {
+    
+        guestButtons.style.display = "none";
+    
+        accountSection.style.display = "flex";
+    
+    }
+
+    const accountSettings =
+  document.getElementById(
+    "accountSettings"
+  );
+
+const settingsBtn =
+  document.getElementById(
+    "settingsBtn"
+  );
+
+const settingsMenu =
+  document.getElementById(
+    "settingsMenu"
+  );
+
+settingsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (settingsMenu.style.display === "block") {
+        settingsMenu.style.display = "none";
+    } else {
+        settingsMenu.style.display = "block";
+    }
+});
+
+document.addEventListener("click", () => {
+    settingsMenu.style.display = "none";
+});
+
+const modal =
+document.getElementById("confirmModal");
+
+const modalTitle =
+document.getElementById("modalTitle");
+
+const modalMessage =
+document.getElementById("modalMessage");
+
+const modalIcon =
+document.getElementById("modalIcon");
+
+const confirmBtn =
+document.getElementById("confirmModalBtn");
+
+const cancelBtn =
+document.getElementById("cancelModalBtn");
+
+function showConfirm(
+  title,
+  message,
+  icon,
+  btnClass,
+  btnText,
+  callback
+) {
+
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+
+  modalIcon.innerHTML = icon;
+
+  confirmBtn.textContent = btnText;
+
+  confirmBtn.className = btnClass;
+
+  modal.classList.add("active");
+
+  confirmBtn.onclick = () => {
+
+    modal.classList.remove("active");
+
+    callback();
+  };
+
+  cancelBtn.onclick = () => {
+
+    modal.classList.remove("active");
+  };
+}
+
+
+// My profile
+const myProfileBtn =
+document.getElementById(
+    "myProfileBtn"
+);
+
+const createProfileBtn =
+document.getElementById(
+    "createProfileBtn"
+);
+
+const editProfileBtn =
+document.getElementById(
+    "editProfileBtn"
+);
+
+const deleteProfileBtn =
+document.getElementById(
+    "deleteProfileBtn"
+);
+
+const logoutBtn =
+document.getElementById(
+    "logoutBtn"
+);
+
+const deleteAccountBtn =
+document.getElementById(
+    "deleteAccountBtn"
+);
+
+myProfileBtn.style.display = "none";
+createProfileBtn.style.display = "none";
+editProfileBtn.style.display = "none";
+deleteProfileBtn.style.display = "none";
+
+const userType =
+localStorage.getItem("userType");
+
+const userId =
+localStorage.getItem("userId");
+
+if (userType === "provider") {
+
+    fetch(
+        `api/check_profile.php?userId=${userId}`
+    )
+    .then(response => response.json())
+    .then(profile => {
+
+        if (profile.hasProfile) {
+
+            myProfileBtn.style.display = "flex";
+            editProfileBtn.style.display = "flex";
+            deleteProfileBtn.style.display = "flex";
+
+        }
+
+        else {
+
+            createProfileBtn.style.display = "flex";
+
+        }
+
+    });
+
+}
+
+createProfileBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "create_profile.html";
+
+    }
+);
+
+myProfileBtn.addEventListener(
+    "click",
+    async () => {
+
+        const response =
+            await fetch(
+                `api/check_profile.php?userId=${userId}`
+            );
+
+        const data =
+            await response.json();
+
+        if (data.hasProfile) {
+
+            window.location.href =
+                `profile.html?id=${data.idProfil}`;
+
+        }
+
+        else {
+
+            window.location.href =
+                "create_profile.html";
+
+        }
+
+    }
+);
+
+
+
+
+
+// LOGOUT
+logoutBtn.addEventListener("click", () => {
+
+  showConfirm(
+
+    "Logout",
+
+    "Are you sure you want to log out?",
+
+    `
+    <svg width="40" height="40" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+    `,
+
+    "btn btn-primary",
+
+    "Logout",
+
+    () => {
+
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userType");
+
+      window.location.href = "login.html";
+
+    }
+
+  );
+
+});
+
+
+// DELETE ACCOUNT
+deleteAccountBtn.addEventListener("click", () => {
+
+  showConfirm(
+
+    "Delete Account",
+
+    "This action cannot be undone.",
+
+    `
+    <svg width="40" height="40" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6"/>
+      <path d="M14 11v6"/>
+      <path d="M9 6V4h6v2"/>
+    </svg>
+    `,
+
+    "btn btn-danger",
+
+    "Delete",
+
+    () => {
+
+      const userId =
+localStorage.getItem("userId");
+
+fetch("api/delete_account.php", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    userId
+  })
+})
+.then(response => response.json())
+.then(data => {
+
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
+
+  localStorage.clear();
+
+  alert("Account deleted successfully");
+
+  window.location.href = "../index.html";
+
+})
+.catch(error => {
+
+  console.error(error);
+
+  alert("Something went wrong");
+
+});
+
+    }
+
+  );
+
+});
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////reviews////////////////////////////////////////////////
+${
+              review.idClient == currentClientId
+              ?
+              `
+              <button
+                  class="delete-review-btn"
+                  onclick="deleteReview(${review.idAvis})">
+          
+                  Delete Review
+          
+              </button>
+              `
+              :
+              ""
+          }

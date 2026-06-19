@@ -66,6 +66,8 @@ $userId = $user['idUtilisateur'];
 
 $userType = "client";
 
+$clientId = null;
+
 $checkArtisan = mysqli_query(
     $conn,
     "SELECT idArtisan
@@ -78,9 +80,25 @@ if (mysqli_num_rows($checkArtisan) > 0) {
     $userType = "provider";
 }
 
+$checkClient = mysqli_query(
+    $conn,
+    "SELECT idClient
+     FROM client
+     WHERE idUtilisateur = $userId
+     LIMIT 1"
+);
+
+if (mysqli_num_rows($checkClient) > 0) {
+
+    $client = mysqli_fetch_assoc($checkClient);
+
+    $clientId = $client['idClient'];
+}
+
 echo json_encode([
     "success" => true,
     "userId" => $user['idUtilisateur'],
+    "clientId" => $clientId,
     "fullName" => $user['nomComplet'],
     "userType" => $userType
 ]);

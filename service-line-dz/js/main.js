@@ -248,6 +248,7 @@ function clearError(input) {
    Login Form Handler
    ============================================ */
 function handleLogin(event) {
+  console.log("NEW LOGIN FUNCTION");
   event.preventDefault();
 
   const form = event.target;
@@ -288,6 +289,8 @@ function handleLogin(event) {
   .then(response => response.json())
   .then(data => {
 
+    console.log(data);
+
     if (data.error) {
 
       alert(data.error);
@@ -306,20 +309,48 @@ function handleLogin(event) {
     );
 
     localStorage.setItem(
+      "clientId",
+      data.clientId
+    );
+
+    localStorage.setItem(
       "userType",
       data.userType
     );
 
     if (data.userType === "provider") {
+    
+        fetch(
+            "api/check_profile.php?userId=" + data.userId
+        )
+        .then(response => response.json())
+        .then(profile => {
 
-      window.location.href =
-        "create_profile.html";
+    console.log("Profile response:", profile);
+
+    if (profile.hasProfile) {
+
+        console.log("Going to profile");
+
+        window.location.href =
+            "profile.html?id=" + profile.idProfil;
 
     } else {
 
-      window.location.href =
-        "search.html";
+        console.log("Going to create profile");
 
+        window.location.href =
+            "create_profile.html";
+
+    }
+
+});
+    
+    } else {
+    
+        window.location.href =
+            "search.html";
+    
     }
 
   })

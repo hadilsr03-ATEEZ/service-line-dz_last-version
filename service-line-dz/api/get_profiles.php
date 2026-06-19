@@ -23,9 +23,12 @@ $where = [
 
 if (!empty($categoryId)) {
 
-    $where[] =
-        "caMain.idCategorie = " .
-        (int)$categoryId;
+    $where[] = "
+    p.idProfil IN (
+        SELECT idProfil
+        FROM categorie_artisan
+        WHERE idCategorie = " . (int)$categoryId . "
+    )";
 }
 
 if (!empty($wilayaId)) {
