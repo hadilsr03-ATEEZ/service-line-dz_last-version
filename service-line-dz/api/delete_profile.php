@@ -24,6 +24,7 @@ $conn->begin_transaction();
 
 $getProfile = $conn->prepare("
 SELECT
+    idArtisan,
     photoProfil,
     photoCouverture,
     portfolio,
@@ -43,6 +44,8 @@ $profile =
 $getProfile
 ->get_result()
 ->fetch_assoc();
+
+$artisanId = $profile["idArtisan"];
 
 if (!$profile) {
 
@@ -114,6 +117,31 @@ foreach ($files as $file) {
 
     }
 
+}
+
+/***************************
+ Delete Reviews
+****************************/
+
+$deleteAvis = $conn->prepare("
+DELETE FROM avis
+WHERE idArtisan = ?
+");
+
+$deleteAvis->bind_param(
+    "i",
+    $artisanId
+);
+
+if (!$deleteAvis->execute()) {
+
+    $conn->rollback();
+
+    echo json_encode([
+        "error" => $deleteAvis->error
+    ]);
+
+    exit;
 }
 
 /* =========================
