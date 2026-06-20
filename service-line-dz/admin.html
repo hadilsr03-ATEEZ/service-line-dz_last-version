@@ -377,28 +377,55 @@
         <div class="dashboard-card" style="margin-top: 1.5rem;">
           <div id="statistics-section" class="dashboard-card-header">
             <h3>Platform Statistics</h3>
-            <select class="form-control" style="width: 150px; padding: 0.5rem; font-size: 0.875rem;">
-              <option>Last 30 Days</option>
-              <option>Last 7 Days</option>
-              <option>Last 90 Days</option>
-              <option>This Year</option>
-            </select>
+            <select
+
+id="statsPeriod"
+
+class="form-control"
+
+style="width:150px;padding:.5rem;font-size:.875rem;">
+
+<option value="30">
+
+Last 30 Days
+
+</option>
+
+<option value="7">
+
+Last 7 Days
+
+</option>
+
+<option value="90">
+
+Last 90 Days
+
+</option>
+
+<option value="365">
+
+This Year
+
+</option>
+
+</select>
           </div>
           <div style="padding: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
             <div style="text-align: center;">
-              <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">0</div>
+              <div id="totalReviews" style="font-size: 2rem; font-weight: 700; color: var(--primary);">0</div>
               <div style="color: var(--text-muted); font-size: 0.9375rem;">Total Revirws</div>
             </div>
             <div style="text-align: center;">
-              <div style="font-size: 2rem; font-weight: 700; color: var(--success);">0</div>
+              <div id="averageRating" style="font-size: 2rem; font-weight: 700; color: var(--success);">0</div>
               <div style="color: var(--text-muted); font-size: 0.9375rem;">Average Rating</div>
             </div>
             <div style="text-align: center;">
-              <div style="font-size: 2rem; font-weight: 700; color: var(--warning);">0</div>
+              <div id="approvedProviders" style="font-size: 2rem; font-weight: 700; color: var(--warning);">0</div>
               <div style="color: var(--text-muted); font-size: 0.9375rem;">Approved Providers</div>
             </div>
             <div style="text-align: center;">
-              <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">0</div>
+              <div id="rejectedProviders" style="font-size: 2rem; font-weight: 700; color: var(--accent);">0</div>
               <div style="color: var(--text-muted); font-size: 0.9375rem;">Rejected Providers</div>
             </div>
           </div>
@@ -1065,6 +1092,51 @@ function renderStars(rating) {
     return stars;
 }
 
+async function loadStatistics(days){
+
+    try{
+
+        const response =
+        await fetch(
+        `api/admin_statistics.php?days=${days}`
+        );
+
+        const data =
+        await response.json();
+
+        document.getElementById(
+        "totalReviews"
+        ).textContent =
+        data.totalReviews;
+
+        document.getElementById(
+        "averageRating"
+        ).textContent =
+        data.averageRating;
+
+        document.getElementById(
+        "approvedProviders"
+        ).textContent =
+        data.approvedProviders;
+
+        document.getElementById(
+        "rejectedProviders"
+        ).textContent =
+        data.rejectedProviders;
+
+    }
+
+    catch(error){
+
+        console.log(
+        "Statistics error:",
+        error
+        );
+
+    }
+
+}
+
 document.getElementById("reviewsTable").addEventListener("click", async function(e){
 
     const id = e.target.dataset.id;
@@ -1440,6 +1512,26 @@ document.getElementById("saveCategoryBtn").addEventListener("click", async funct
     }
 });
 
+document.getElementById(
+
+"statsPeriod"
+
+).addEventListener(
+
+"change",
+
+function(){
+
+loadStatistics(
+
+this.value
+
+);
+
+}
+
+);
+
 
 
 
@@ -1456,6 +1548,8 @@ loadPendingProviders();
 loadCategories();
 
 loadReviews();
+
+loadStatistics(30);
 
 }
 );
