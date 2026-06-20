@@ -318,7 +318,15 @@ function handleLogin(event) {
       data.userType
     );
 
-    if (data.userType === "provider") {
+    if (data.userType === "admin") {
+    
+        window.location.href =
+            "admin.html";
+    
+    
+    }
+    
+    else if (data.userType === "provider") {
     
         fetch(
             "api/check_profile.php?userId=" + data.userId

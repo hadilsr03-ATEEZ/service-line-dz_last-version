@@ -1,0 +1,15 @@
+INSERT INTO utilisateur
+(
+nomComplet,
+email,
+telephone,
+motDePasse
+)
+
+VALUES
+(
+'Admin',
+'admin@servicelinedz.com',
+'0000000000',
+'PASSWORD_HASH'
+);

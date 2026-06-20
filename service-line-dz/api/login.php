@@ -68,6 +68,26 @@ $userType = "client";
 
 $clientId = null;
 
+
+/* Check Admin */
+
+$checkAdmin = mysqli_query(
+    $conn,
+    "SELECT idAdmin
+     FROM administrateur
+     WHERE idUtilisateur = $userId
+     LIMIT 1"
+);
+
+
+if(mysqli_num_rows($checkAdmin) > 0){
+
+    $userType = "admin";
+
+}
+
+/* Check Provider */
+
 $checkArtisan = mysqli_query(
     $conn,
     "SELECT idArtisan
@@ -76,9 +96,17 @@ $checkArtisan = mysqli_query(
      LIMIT 1"
 );
 
-if (mysqli_num_rows($checkArtisan) > 0) {
+if (
+    $userType !== "admin"
+    &&
+    mysqli_num_rows($checkArtisan) > 0
+) {
+
     $userType = "provider";
+
 }
+
+/* Check Client */
 
 $checkClient = mysqli_query(
     $conn,
@@ -88,11 +116,16 @@ $checkClient = mysqli_query(
      LIMIT 1"
 );
 
-if (mysqli_num_rows($checkClient) > 0) {
+if (
+    $userType !== "admin"
+    &&
+    mysqli_num_rows($checkClient) > 0
+) {
 
     $client = mysqli_fetch_assoc($checkClient);
 
     $clientId = $client['idClient'];
+
 }
 
 echo json_encode([
