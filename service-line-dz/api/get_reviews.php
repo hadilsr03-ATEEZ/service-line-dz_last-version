@@ -74,6 +74,11 @@ INNER JOIN utilisateur u
 
 WHERE a.idArtisan = ?
 
+AND (
+    a.status = 'VISIBLE'
+    OR a.status IS NULL
+)
+
 ORDER BY a.dateCreation DESC
 ";
 

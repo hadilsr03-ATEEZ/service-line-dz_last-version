@@ -68,6 +68,27 @@
     min-width:160px;
 
 }
+
+.modal-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.modal-box{
+    background:white;
+    padding:1.5rem;
+    border-radius:12px;
+    width:320px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
   </style>
 </head>
 <body>
@@ -312,14 +333,7 @@
                   </tr>
                 </thead>
                 <tbody id="categoriesTable">
-                  <tr>
-                    <td><strong>Development</strong></td>
-                    <td>0</td>
-                    <td>
-                      <button class="btn btn-secondary btn-sm">Edit</button>
-                      <button class="btn btn-danger btn-sm">Delete</button>
-                    </td>
-                  </tr>
+                <!-- dynamic content loaded via JS -->
                 </tbody>
               </table>
             </div>
@@ -350,55 +364,7 @@
             </thead>
 
             <tbody id="reviewsTable">
-
-                <tr>
-                    <td>Ahmed Benali</td>
-                    <td>Mohamed Zerrouki</td>
-                    <td>★★★★★</td>
-
-                    <td class="comment-cell">
-                        Excellent service and very professional...
-                    </td>
-
-                    <td>12 Jun 2026</td>
-
-                    <td>
-                        <div class="review-actions">
-                            <button class="btn btn-secondary btn-sm">
-                                Review
-                            </button>
-
-                            <button class="btn btn-danger btn-sm">
-                                Hide
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Amira Boudiaf</td>
-                    <td>Youcef Hamidi</td>
-                    <td>★★★☆☆</td>
-
-                    <td class="comment-cell">
-                        Service was okay but arrived late...
-                    </td>
-
-                    <td>10 Jun 2026</td>
-
-                    <td>
-                        <div class="review-actions">
-                            <button class="btn btn-secondary btn-sm">
-                                Review
-                            </button>
-
-                            <button class="btn btn-success btn-sm">
-                                Show
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
+            <!-- dynamic content -->
             </tbody>
 
         </table>
@@ -442,6 +408,34 @@
   </div>
   </div>
 
+  <div id="editCategoryModal" class="modal-overlay" style="display:none;">
+
+    <div class="modal-box">
+
+        <h3>Edit Category</h3>
+
+        <input
+            type="text"
+            id="editCategoryInput"
+            class="form-control"
+            placeholder="Category name">
+
+        <div style="display:flex; gap:.5rem; margin-top:1rem; justify-content:flex-end;">
+
+            <button class="btn btn-secondary btn-sm" id="closeEditModal">
+                Cancel
+            </button>
+
+            <button class="btn btn-primary btn-sm" id="saveCategoryBtn">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
   <script src="js/main.js"></script>
   <script>
 const navLinks = document.querySelectorAll('.dashboard-nav a');
@@ -457,6 +451,9 @@ navLinks.forEach(link => {
 
     });
 });
+
+let allCategories = [];
+let editCategoryId = null;
 
   console.log(
 document.getElementById(
@@ -968,6 +965,162 @@ async function loadPendingProviders(){
 
 }
 
+async function loadCategories() {
+
+    try {
+
+        const res = await fetch("api/admin_get_categories.php");
+        const data = await res.json();
+
+        allCategories = data;
+
+        renderCategories(allCategories);
+
+    } catch (error) {
+        console.log("Categories error:", error);
+    }
+}
+
+async function loadReviews() {
+
+    try {
+
+        const res = await fetch("api/admin_get_reviews.php");
+        const data = await res.json();
+
+        console.log("REVIEWS RESPONSE:", data);
+
+        // 🚨 safety check
+        if (!Array.isArray(data)) {
+            console.log("Not an array:", data);
+            return;
+        }
+
+        const tbody = document.getElementById("reviewsTable");
+        tbody.innerHTML = "";
+
+        data.forEach(r => {
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${r.reviewer}</td>
+                    <td>${r.provider}</td>
+                    <td>${renderStars(r.rating)}</td>
+                    <td class="comment-cell">${r.comment}</td>
+                    <td>${r.date}</td>
+                    <td>
+
+${
+    r.status === "HIDDEN"
+
+    ?
+
+    `
+
+    <button
+    class="btn btn-success btn-sm show-review"
+    data-id="${r.idReview}">
+
+    Show
+
+    </button>
+
+    `
+
+    :
+
+    `
+
+    <button
+    class="btn btn-danger btn-sm hide-review"
+    data-id="${r.idReview}">
+
+    Hide
+
+    </button>
+
+    `
+
+}
+
+</td>
+                </tr>
+            `;
+
+        });
+
+    } catch (error) {
+        console.log("Reviews error:", error);
+    }
+}
+
+function renderStars(rating) {
+
+    let stars = "";
+
+    for (let i = 1; i <= 5; i++) {
+        stars += i <= rating ? "★" : "☆";
+    }
+
+    return stars;
+}
+
+document.getElementById("reviewsTable").addEventListener("click", async function(e){
+
+    const id = e.target.dataset.id;
+
+    // Hide review
+    if(e.target.classList.contains("hide-review")){
+
+        await fetch("api/admin_update_review_status.php",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                idAvis:id,
+
+                status:"HIDDEN"
+
+            })
+
+        });
+
+        loadReviews();
+
+    }
+
+    // Show review
+    if(e.target.classList.contains("show-review")){
+
+        await fetch("api/admin_update_review_status.php",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                idAvis:id,
+
+                status:"VISIBLE"
+
+            })
+
+        });
+
+        loadReviews();
+
+    }
+
+});
+
 
 function viewProfile(idProfil){
 
@@ -1098,6 +1251,197 @@ loadStats();
 
 }
 
+function renderCategories(categories) {
+
+    const tbody = document.getElementById("categoriesTable");
+    tbody.innerHTML = "";
+
+    if (categories.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align:center;color:var(--text-muted);">
+                    No categories found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    categories.forEach(cat => {
+
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${cat.nomCategorie}</strong></td>
+                <td>${cat.totalProviders}</td>
+                <td>
+                    <button
+                        class="btn btn-secondary btn-sm edit-category"
+                        data-id="${cat.idCategorie}"
+                        data-name="${cat.nomCategorie}">
+                        Edit
+                    </button>
+
+                    <button
+                        class="btn btn-danger btn-sm delete-category"
+                        data-id="${cat.idCategorie}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+document.getElementById("categorySearch").addEventListener("input", function () {
+
+    const value = this.value.toLowerCase();
+
+    const filtered = allCategories.filter(cat =>
+        cat.nomCategorie.toLowerCase().includes(value)
+    );
+
+    renderCategories(filtered);
+});
+
+document.getElementById("addCategoryBtn").addEventListener("click", async function () {
+
+    const input = document.getElementById("newCategory");
+    const name = input.value.trim();
+
+    if (!name) {
+        alert("Please enter a category name");
+        return;
+    }
+
+    try {
+
+        const res = await fetch("api/admin_add_category.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nomCategorie: name
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            input.value = "";
+
+            // refresh list
+            loadCategories();
+
+        } else {
+            alert(data.message || "Failed to add category");
+        }
+
+    } catch (error) {
+        console.log("Add category error:", error);
+    }
+});
+
+document.getElementById("categoriesTable").addEventListener("click", async function (e) {
+
+    if (e.target.classList.contains("delete-category")) {
+
+        const id = e.target.dataset.id;
+
+        const confirmDelete = confirm("Delete this category?");
+
+        if (!confirmDelete) return;
+
+        try {
+
+            const res = await fetch("api/admin_delete_category.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idCategorie: id
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                loadCategories();
+            } else {
+                alert(data.message || "Delete failed");
+            }
+
+        } catch (error) {
+            console.log("Delete category error:", error);
+        }
+    }
+});
+
+document.getElementById("categoriesTable").addEventListener("click", function (e) {
+
+    if (e.target.classList.contains("edit-category")) {
+
+        editCategoryId = e.target.dataset.id;
+
+        const currentName = e.target.dataset.name;
+
+        document.getElementById("editCategoryInput").value = currentName;
+
+        document.getElementById("editCategoryModal").style.display = "flex";
+    }
+});
+
+document.getElementById("closeEditModal").addEventListener("click", function () {
+
+    document.getElementById("editCategoryModal").style.display = "none";
+
+    editCategoryId = null;
+});
+
+document.getElementById("saveCategoryBtn").addEventListener("click", async function () {
+
+    const newName = document.getElementById("editCategoryInput").value.trim();
+
+    if (!newName) {
+        alert("Category name cannot be empty");
+        return;
+    }
+
+    try {
+
+        const res = await fetch("api/admin_update_category.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idCategorie: editCategoryId,
+                nomCategorie: newName
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            document.getElementById("editCategoryModal").style.display = "none";
+            editCategoryId = null;
+
+            loadCategories();
+
+        } else {
+            alert(data.message || "Update failed");
+        }
+
+    } catch (error) {
+        console.log("Save edit error:", error);
+    }
+});
+
+
+
 
 document.addEventListener(
 "DOMContentLoaded",
@@ -1108,6 +1452,10 @@ loadStats();
 loadRecentUsers();
 
 loadPendingProviders();
+
+loadCategories();
+
+loadReviews();
 
 }
 );
