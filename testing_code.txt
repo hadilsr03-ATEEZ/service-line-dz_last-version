@@ -13,3 +13,9 @@ VALUES
 '0000000000',
 'PASSWORD_HASH'
 );
+
+
+
+INSERT INTO administrateur(idUtilisateur)
+
+VALUES(10);

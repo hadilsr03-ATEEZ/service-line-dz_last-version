@@ -2095,6 +2095,25 @@
           </svg>
       </button>
 
+      <button id="dashboardBtn">
+      
+          <span>Dashboard</span>
+      
+          <svg width="20" height="20"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2">
+      
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+      
+          </svg>
+      
+      </button>
+
 
       <button id="logoutBtn">
         <span>Logout</span>
@@ -2888,13 +2907,25 @@ document.getElementById(
     "deleteAccountBtn"
 );
 
+const dashboardBtn =
+document.getElementById(
+    "dashboardBtn"
+);
+
 myProfileBtn.style.display = "none";
 createProfileBtn.style.display = "none";
 editProfileBtn.style.display = "none";
 deleteProfileBtn.style.display = "none";
+dashboardBtn.style.display = "none";
 
 
-if (userType === "provider") {
+if (userType === "admin") {
+
+    dashboardBtn.style.display = "flex";
+
+}
+
+else if (userType === "provider") {
 
     fetch(
         `service-line-dz/api/check_profile.php?userId=${userId}`
@@ -2902,7 +2933,7 @@ if (userType === "provider") {
     .then(response => response.json())
     .then(profile => {
 
-      console.log(profile);
+        console.log(profile);
 
         if (profile.hasProfile) {
 
@@ -2977,6 +3008,16 @@ editProfileBtn.addEventListener(
                 `service-line-dz/edit_profile.html?id=${data.idProfil}`;
 
         }
+
+    }
+);
+
+dashboardBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+        "service-line-dz/admin.html";
 
     }
 );
@@ -3104,6 +3145,7 @@ logoutBtn.addEventListener("click", () => {
 
       localStorage.removeItem("userId");
       localStorage.removeItem("userType");
+      localStorage.removeItem("clientId");
 
       window.location.href = "service-line-dz/login.html";
 
