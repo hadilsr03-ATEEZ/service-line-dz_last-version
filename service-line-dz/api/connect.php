@@ -1,13 +1,16 @@
 <?php
+// NEVER close PHP tag
 
-$host = "localhost";
-$dbname = "servicelinedz";
-$username = "root";
-$password = "";
+$host = "sql300.infinityfree.com";
+$dbname = "if0_42155526_serviceline_dz";
+$username = "if0_42155526";
+$password = "mDCZp6zNOpDcbq";
 
-$conn = mysqli_connect($host, $username, $password, $dbname);
+$conn = mysqli_init();
+mysqli_real_connect($conn, $host, $username, $password, $dbname);
+
+mysqli_set_charset($conn, "utf8mb4");
 
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    die("DB connection failed");
 }
-?>

@@ -1,17 +1,10 @@
 <?php
 
-header("Content-Type: application/json");
+error_reporting(E_ALL);
 
-require_once "connect.php";
+include "connect.php";
 
-$sql = "
-SELECT
-    idWilaya,
-    nomWilaya
-FROM wilaya
-ORDER BY idWilaya
-";
-
+$sql = "SELECT idWilaya, nomWilaya FROM wilaya";
 $result = mysqli_query($conn, $sql);
 
 $wilayas = [];
@@ -20,4 +13,5 @@ while ($row = mysqli_fetch_assoc($result)) {
     $wilayas[] = $row;
 }
 
-echo json_encode($wilayas);
+// DO NOT send header yet — test raw output first
+echo json_encode($wilayas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
