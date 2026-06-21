@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 16, 2026 at 02:27 AM
+-- Generation Time: Jun 21, 2026 at 12:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -32,6 +32,13 @@ CREATE TABLE `administrateur` (
   `idUtilisateur` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `administrateur`
+--
+
+INSERT INTO `administrateur` (`idAdmin`, `idUtilisateur`) VALUES
+(1, 15);
+
 -- --------------------------------------------------------
 
 --
@@ -50,11 +57,13 @@ CREATE TABLE `artisan` (
 --
 
 INSERT INTO `artisan` (`idArtisan`, `idUtilisateur`, `statut`, `dateVerification`) VALUES
-(1, 2, 'EN_ATTENTE', NULL),
-(3, 6, 'EN_ATTENTE', NULL),
-(5, 9, 'EN_ATTENTE', NULL),
-(6, 10, 'EN_ATTENTE', NULL),
-(7, 11, 'EN_ATTENTE', NULL);
+(3, 6, 'REJETE', NULL),
+(6, 10, 'APPROUVE', NULL),
+(7, 11, 'APPROUVE', NULL),
+(8, 12, 'APPROUVE', NULL),
+(9, 14, 'APPROUVE', NULL),
+(10, 16, 'EN_ATTENTE', NULL),
+(11, 17, 'EN_ATTENTE', NULL);
 
 -- --------------------------------------------------------
 
@@ -68,17 +77,20 @@ CREATE TABLE `avis` (
   `idArtisan` int(11) NOT NULL,
   `note` int(11) NOT NULL,
   `commentaire` text DEFAULT NULL,
-  `dateCreation` datetime DEFAULT current_timestamp()
+  `dateCreation` datetime DEFAULT current_timestamp(),
+  `status` varchar(20) DEFAULT 'VISIBLE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `avis`
 --
 
-INSERT INTO `avis` (`idAvis`, `idClient`, `idArtisan`, `note`, `commentaire`, `dateCreation`) VALUES
-(1, 1, 5, 5, 'Excellent work, highly recommended.', '2026-06-15 17:26:17'),
-(2, 1, 7, 5, 'Excellent work, highly recommended.', '2026-06-15 18:42:35'),
-(3, 2, 7, 4, 'Serious,Fast response and high-quality workmanship.', '2026-06-15 18:45:25');
+INSERT INTO `avis` (`idAvis`, `idClient`, `idArtisan`, `note`, `commentaire`, `dateCreation`, `status`) VALUES
+(3, 2, 7, 4, 'Serious,Fast response and high-quality workmanship.', '2026-06-15 18:45:25', 'VISIBLE'),
+(4, 2, 6, 4, 'good job', '2026-06-16 21:00:18', 'VISIBLE'),
+(5, 1, 6, 5, 'the best', '2026-06-16 21:01:13', 'VISIBLE'),
+(8, 1, 7, 5, 'good job 👍🏻', '2026-06-19 14:54:16', 'VISIBLE'),
+(9, 5, 6, 3, 'aaaaa', '2026-06-20 11:09:00', 'VISIBLE');
 
 -- --------------------------------------------------------
 
@@ -110,7 +122,9 @@ INSERT INTO `categorie` (`idCategorie`, `nomCategorie`) VALUES
 (12, 'Gardening & Landscaping'),
 (13, 'Graphic Design'),
 (14, 'Photography & Video Editing'),
-(15, 'Mobile App Development');
+(15, 'Mobile App Development'),
+(16, 'categotyyyy'),
+(19, 'jgfty');
 
 -- --------------------------------------------------------
 
@@ -130,14 +144,13 @@ CREATE TABLE `categorie_artisan` (
 --
 
 INSERT INTO `categorie_artisan` (`idCategorieArtisan`, `idProfil`, `idCategorie`, `type`) VALUES
-(1, 1, 9, 'MAIN'),
-(2, 1, 2, 'ADDITIONAL'),
-(3, 1, 10, 'ADDITIONAL'),
 (4, 4, 14, 'MAIN'),
 (5, 4, 13, 'ADDITIONAL'),
 (6, 5, 1, 'MAIN'),
 (7, 5, 2, 'ADDITIONAL'),
-(8, 5, 10, 'ADDITIONAL');
+(8, 5, 10, 'ADDITIONAL'),
+(16, 8, 4, 'MAIN'),
+(17, 8, 12, 'ADDITIONAL');
 
 -- --------------------------------------------------------
 
@@ -156,7 +169,8 @@ CREATE TABLE `client` (
 
 INSERT INTO `client` (`idClient`, `idUtilisateur`) VALUES
 (1, 1),
-(2, 3);
+(2, 3),
+(5, 13);
 
 -- --------------------------------------------------------
 
@@ -187,7 +201,11 @@ INSERT INTO `disponibilite` (`idDisponibilite`, `idProfil`, `jourSemaine`, `heur
 (14, 5, 'tuesday', '08:00:00', '18:00:00'),
 (15, 5, 'wednesday', '08:00:00', '18:00:00'),
 (16, 5, 'thursday', '08:00:00', '18:00:00'),
-(17, 5, 'saturday', '08:00:00', '18:00:00');
+(17, 5, 'saturday', '08:00:00', '18:00:00'),
+(38, 8, 'monday', '08:00:00', '17:00:00'),
+(39, 8, 'tuesday', '08:00:00', '17:00:00'),
+(40, 8, 'wednesday', '08:00:00', '17:00:00'),
+(41, 8, 'thursday', '08:00:00', '17:00:00');
 
 -- --------------------------------------------------------
 
@@ -201,6 +219,16 @@ CREATE TABLE `favori` (
   `idArtisan` int(11) NOT NULL,
   `dateAjout` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `favori`
+--
+
+INSERT INTO `favori` (`idFavori`, `idClient`, `idArtisan`, `dateAjout`) VALUES
+(6, 2, 7, '2026-06-16 20:57:22'),
+(7, 2, 6, '2026-06-16 20:57:27'),
+(8, 1, 6, '2026-06-19 10:28:38'),
+(9, 1, 7, '2026-06-21 10:08:45');
 
 -- --------------------------------------------------------
 
@@ -233,9 +261,9 @@ CREATE TABLE `profil_artisan` (
 --
 
 INSERT INTO `profil_artisan` (`idProfil`, `idArtisan`, `idVille`, `photoProfil`, `photoCouverture`, `description`, `adresse`, `anneesExperience`, `qualifications`, `diplomes`, `portfolio`, `serviceAreas`, `whatsapp`, `instagram`, `facebook`, `tiktok`, `urgence`) VALUES
-(1, 5, 6, 'uploads/6a2eda790bad6_profile_download (36).jfif', 'uploads/6a2eda790bf2a_cover_🪩.jfif', 'wjhdwa skfladnksjkdrtsll vsirdtfosv', 'ben souna', '3-5', 'hdfisvosdury jzskcxlkzid usfszlvh', '[\"uploads\\/6a2eda790cf4e_qualification_database_class_diagram.pdf\"]', '[\"uploads\\/6a2eda790c468_portfolio_meoww.jfif\",\"uploads\\/6a2eda790c9d5_portfolio_\\ud53c\\ud53c (@Pinkpinknabi) on X.jfif\"]', '[\"chlef\"]', '0655994477', 'www.instagram.com', 'www.facebook.com', 'www.tiktok.com', 1),
 (4, 6, 6, 'uploads/6a2ef021f3a75_profile_download (37).jfif', 'uploads/6a2ef021f3f7e_cover_🪩.jfif', 'jdfks sakjfie fsjdnfalkf mcxnfvkdziuf zxjfdisxndzllewij f jv sajjxnkjzoia', 'ben souna', '1-2', 'qwertyuiop asdfghjkl zxcvbnm, sdfghjk wertyui', '[\"uploads\\/6a2ef02200fdb_qualification_database_class_diagram.pdf\"]', '[\"uploads\\/6a2ef022002cb_portfolio_download (35).jfif\",\"uploads\\/6a2ef02200937_portfolio_Flower sticker 1.jfif\"]', '[\"chlef\",\"ben souna\",\"la city\"]', '0699097026', 'www.instagram.com', 'www.facebook.com', 'www.tiktok.com', 1),
-(5, 7, 122, 'uploads/6a3038b153fe1_profile_download (39).jfif', 'uploads/6a3038b154501_cover_Protected_  The Benefits of Hiring a Local Plumber in San Jose.jfif', 'Experienced plumber dedicated to providing reliable and efficient plumbing services. Specialized in leak repairs, pipe installation, bathroom renovations, and maintenance. Focused on quality work, customer satisfaction, and timely service.', 'Rue Mohamed Boudiaf', '5-10', 'Vocational Diploma in Plumbing.\r\nProfessional certifications in plumbing maintenance and water heater installation.\r\nWorkplace safety training.\r\nBasic HVAC and refrigeration knowledge.\r\n6 years of professional experience.', '[\"uploads\\/6a3038b15798d_qualification_Professional_Certificates_Yacine_Merabet.pdf.pdf\"]', '[\"uploads\\/6a3038b154a14_portfolio_Why Santino\\u2019s A+ Handyman Service Leads Oceanside, CA for Shower Replacement and Bathroom Remodeling.jfif\",\"uploads\\/6a3038b154fb8_portfolio_Top 5 Reasons to Invest in a New Boiler Today.jfif\",\"uploads\\/6a3038b1554a8_portfolio_Reliable Plumbing Services You Can Trust.jfif\",\"uploads\\/6a3038b15584e_portfolio_Protected_ \\u00a0The Benefits of Hiring a Local Plumber in San Jose.jfif\",\"uploads\\/6a3038b155c8b_portfolio_Pipe Leak Repair in Brentwood.jfif\",\"uploads\\/6a3038b15625c_portfolio_New Orleans Drain Cleaning and Repair Specialists.jfif\",\"uploads\\/6a3038b1566f6_portfolio_How to Install a Drop-In Kitchen Sink _ Lowe\'s.jfif\",\"uploads\\/6a3038b156b48_portfolio_How To Handle Common Plumbing Repairs At Home.jfif\",\"uploads\\/6a3038b156fa3_portfolio_Bathroom Upgrade Service.jfif\",\"uploads\\/6a3038b157417_portfolio_Easy Dishwasher Installation & Drain Connection Marietta.jfif\"]', '[\"El Khroub\",\"Constantine Centre\",\"Ain Smara\"]', '0661457823', 'https://www.instagram.com/yacine.plumbing', 'https://www.facebook.com/yacine.merabet.plumbing', 'https://www.tiktok.com/@yacine.plumbing', 1);
+(5, 7, 122, 'uploads/6a3038b153fe1_profile_download (39).jfif', 'uploads/6a3038b154501_cover_Protected_  The Benefits of Hiring a Local Plumber in San Jose.jfif', 'Experienced plumber dedicated to providing reliable and efficient plumbing services. Specialized in leak repairs, pipe installation, bathroom renovations, and maintenance. Focused on quality work, customer satisfaction, and timely service.', 'Rue Mohamed Boudiaf', '5-10', 'Vocational Diploma in Plumbing.\r\nProfessional certifications in plumbing maintenance and water heater installation.\r\nWorkplace safety training.\r\nBasic HVAC and refrigeration knowledge.\r\n6 years of professional experience.', '[\"uploads\\/6a3038b15798d_qualification_Professional_Certificates_Yacine_Merabet.pdf.pdf\"]', '[\"uploads\\/6a3038b154a14_portfolio_Why Santino\\u2019s A+ Handyman Service Leads Oceanside, CA for Shower Replacement and Bathroom Remodeling.jfif\",\"uploads\\/6a3038b154fb8_portfolio_Top 5 Reasons to Invest in a New Boiler Today.jfif\",\"uploads\\/6a3038b1554a8_portfolio_Reliable Plumbing Services You Can Trust.jfif\",\"uploads\\/6a3038b15584e_portfolio_Protected_ \\u00a0The Benefits of Hiring a Local Plumber in San Jose.jfif\",\"uploads\\/6a3038b155c8b_portfolio_Pipe Leak Repair in Brentwood.jfif\",\"uploads\\/6a3038b15625c_portfolio_New Orleans Drain Cleaning and Repair Specialists.jfif\",\"uploads\\/6a3038b1566f6_portfolio_How to Install a Drop-In Kitchen Sink _ Lowe\'s.jfif\",\"uploads\\/6a3038b156b48_portfolio_How To Handle Common Plumbing Repairs At Home.jfif\",\"uploads\\/6a3038b156fa3_portfolio_Bathroom Upgrade Service.jfif\",\"uploads\\/6a3038b157417_portfolio_Easy Dishwasher Installation & Drain Connection Marietta.jfif\"]', '[\"El Khroub\",\"Constantine Centre\",\"Ain Smara\"]', '0661457823', 'https://www.instagram.com/yacine.plumbing', 'https://www.facebook.com/yacine.merabet.plumbing', 'https://www.tiktok.com/@yacine.plumbing', 1),
+(8, 10, 54, 'uploads/6a37ab3c25cb6_profile_download (38).jfif', 'uploads/6a37ab3c2b688_cover_Color Hunt Palette f8f4e1feba1774512d4e1f00.png', 'jsdfiues fisurew cjdiwuefchsnkdcsaloiefu sifdeufkjnlasu ewj8er ujwefknsalkcknvncpoasu akjsoiur sisoisurwe f', 'abalessa', '10+', 'lkdj sdfjoiew fiufoef oaslfie9if aislksfiepqkf aor9ef alfiwjeofjkoise', '[]', '[]', '[\"osidur\",\"skjroie f\",\"asoiurfh\"]', '0798654321', '', '', '', 1);
 
 -- --------------------------------------------------------
 
@@ -259,7 +287,8 @@ INSERT INTO `service` (`idService`, `idProfil`, `titre`, `description`, `prix`) 
 (1, 4, 'service1', 'the first service', 5000.00),
 (2, 5, 'Leak Repair', ' Detection and repair of water leaks in residential and commercial properties.', 1500.00),
 (3, 5, 'Water Heater Installation', 'Installation and maintenance of electric and gas water heaters.', 8000.00),
-(4, 5, 'Drain Cleaning', 'Fast and effective cleaning of blocked drains and sewer pipes.', 2500.00);
+(4, 5, 'Drain Cleaning', 'Fast and effective cleaning of blocked drains and sewer pipes.', 2500.00),
+(10, 8, 'service1', 'kjenid wieur skfjwe ', 2000.00);
 
 -- --------------------------------------------------------
 
@@ -282,12 +311,16 @@ CREATE TABLE `utilisateur` (
 
 INSERT INTO `utilisateur` (`idUtilisateur`, `nomComplet`, `email`, `telephone`, `motDePasse`, `dateCreation`) VALUES
 (1, 'Hadil', 'hadil03@gmail.com', '0567800366', '$2y$10$mWC0TenxroQTh7ddzS0DjefqnTyhuaoQEJCd2M.RqYh2sIVVmc7cq', '2026-06-13 21:28:33'),
-(2, 'asdfg', 'asdfg@gmail.com', '0789756423', '$2y$10$XKsPh0W5hRX7bnoHjZ0ZYOgCBFqLmZ3bshEmFw2z9DmX0IVY5joui', '2026-06-13 21:42:33'),
 (3, 'Daisy Josephine', 'daisyjosephine03@gmail.com', '0567800365', '$2y$10$rlB6h3BsPPldXUviIhUmD.2jX6gAd.AuIwDyF9Rp.rBZ.vpR7CiYy', '2026-06-13 21:44:06'),
 (6, 'mmmm', 'mmm@gmail.com', '0789756423', '$2y$10$1yQwJX9DBRoOdCmJAKGM2uUWnAXH1cvQd5FCOArIz5wI6LWmM6mtu', '2026-06-13 22:13:40'),
-(9, 'pro1', 'pro1@gmail.com', '0789726423', '$2y$10$lJXgRaawjofhVrttdVE0.OSvsSLP2oS7Sb1fUicEPS.UlPze71PJu', '2026-06-14 05:33:14'),
 (10, 'imane sahar', 'imane10@gmail.com', '0699097026', '$2y$10$lKKMsMkLJOKcwltlDfGToeypuVO9a.gQuijQkObSfQoIjHwAtb0GO', '2026-06-14 19:14:12'),
-(11, 'Yasine Merabet', 'yacine.merabet@gmail.com', '0661457823', '$2y$10$wR3HoVnkmZ0ZpzH2vXwUAu.CwjwHeOw4M/q.EVZ0fQ6rkH46GlmqK', '2026-06-15 17:55:38');
+(11, 'Yasine Merabet', 'yacine.merabet@gmail.com', '0661457823', '$2y$10$wR3HoVnkmZ0ZpzH2vXwUAu.CwjwHeOw4M/q.EVZ0fQ6rkH46GlmqK', '2026-06-15 17:55:38'),
+(12, 'test', 'test@gmail.com', '0566778899', '$2y$10$IBGbvmQf7UkyCZRG28vMyu0w651DSyL58zHWtKZQ/DIpz3BUamAMS', '2026-06-18 21:32:55'),
+(13, 'abcd', 'abcd@gmail.com', '0799886655', '$2y$10$ETumsduxHn674DhR7VbUXOSZ2BQyiJEVf96Cvh5Tz7AVIYe8IJzMq', '2026-06-19 18:25:49'),
+(14, 'provider2', 'provider2@gmail.com', '0799886655', '$2y$10$EWp.B68P6WRsr1ojsLYh8.LbOXQTkBonhA7hbhx7BcS/lOBNiCQy.', '2026-06-20 12:39:57'),
+(15, 'Admin', 'admin@servicelinedz.com', '0000000000', '$2y$10$nAZF7IMPdGIrJRVkGQwQuuVqvjslJG.xD.1di5kVWbwfnWVMd1yui', '2026-06-20 22:37:54'),
+(16, 'provider3', 'provider3@gmail.com', '0798654321', '$2y$10$QDa5qFaEWhjOZcfbwL1Y5u6ygMUDzBe211tb4Iglqsgf5u8Uw/CFe', '2026-06-21 10:10:12'),
+(17, 'pro11', 'pro11@gmail.com', '0798694321', '$2y$10$OIMxHCtGaw2fFkKgOqj4Duu2BbseWd.OlRot5y6V7/TkQ86ukT5nq', '2026-06-21 11:17:56');
 
 -- --------------------------------------------------------
 
@@ -696,7 +729,7 @@ ALTER TABLE `artisan`
 ALTER TABLE `avis`
   ADD PRIMARY KEY (`idAvis`),
   ADD UNIQUE KEY `idClient` (`idClient`,`idArtisan`),
-  ADD KEY `idArtisan` (`idArtisan`);
+  ADD KEY `fk_avis_artisan` (`idArtisan`);
 
 --
 -- Indexes for table `categorie`
@@ -777,67 +810,67 @@ ALTER TABLE `wilaya`
 -- AUTO_INCREMENT for table `administrateur`
 --
 ALTER TABLE `administrateur`
-  MODIFY `idAdmin` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idAdmin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `artisan`
 --
 ALTER TABLE `artisan`
-  MODIFY `idArtisan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idArtisan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `avis`
 --
 ALTER TABLE `avis`
-  MODIFY `idAvis` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idAvis` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `categorie`
 --
 ALTER TABLE `categorie`
-  MODIFY `idCategorie` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idCategorie` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `categorie_artisan`
 --
 ALTER TABLE `categorie_artisan`
-  MODIFY `idCategorieArtisan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idCategorieArtisan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `idClient` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idClient` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `disponibilite`
 --
 ALTER TABLE `disponibilite`
-  MODIFY `idDisponibilite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `idDisponibilite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `favori`
 --
 ALTER TABLE `favori`
-  MODIFY `idFavori` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idFavori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `profil_artisan`
 --
 ALTER TABLE `profil_artisan`
-  MODIFY `idProfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idProfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `idService` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idService` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `idUtilisateur` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idUtilisateur` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `ville`
@@ -872,7 +905,7 @@ ALTER TABLE `artisan`
 --
 ALTER TABLE `avis`
   ADD CONSTRAINT `avis_ibfk_1` FOREIGN KEY (`idClient`) REFERENCES `client` (`idClient`) ON DELETE CASCADE,
-  ADD CONSTRAINT `avis_ibfk_2` FOREIGN KEY (`idArtisan`) REFERENCES `artisan` (`idArtisan`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_avis_artisan` FOREIGN KEY (`idArtisan`) REFERENCES `artisan` (`idArtisan`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `categorie_artisan`
